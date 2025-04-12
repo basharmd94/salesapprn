@@ -39,6 +39,11 @@
     "experiments": {
       "typedRoutes": true
     },
-    "owner": "basharmd93"
+    "owner": "basharmd93",
+    "extra": {
+      "eas": {
+        "projectId": "69e6e213-78a0-49ae-8ab3-f761365ddf77"
+      }
+    }
   }
 }
