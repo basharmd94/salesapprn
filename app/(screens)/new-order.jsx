@@ -65,7 +65,7 @@ export default function NewOrder() {
       <Box className="flex-1 p-4">
         <HStack className="items-center justify-between mb-4">
           <VStack>
-            <Heading size="xl" className="text-gray-800">New Orders</Heading>
+            <Heading size="lg" className="text-gray-800">Last 10 New Orders</Heading>
             <Text className="text-gray-500">Pending orders to process</Text>
           </VStack>
           
