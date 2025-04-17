@@ -1,119 +1,199 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ScrollView, RefreshControl, ActivityIndicator } from "react-native";
 import { Box } from "@/components/ui/box";
 import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
-import { Button, ButtonText, ButtonIcon } from "@/components/ui/button";
-import { useToast, Toast, ToastTitle, ToastDescription } from "@/components/ui/toast";
+import { Badge, BadgeText } from "@/components/ui/badge";
+import { Button, ButtonText } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Divider } from "@/components/ui/divider";
 import { useRouter } from 'expo-router';
-import { ArrowLeft, AlertCircle, Check, CircleX } from 'lucide-react-native';
-import { ScrollView } from "react-native";
+import { Package, AlertCircle, Clock, Tag, CreditCard, Store, XCircle } from 'lucide-react-native';
+import { getCancelledOrders } from '@/lib/api_orders';
 
 export default function CancelOrder() {
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const toast = useToast();
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState(null);
   
-  const handleCancel = useCallback(() => {
-    setIsSubmitting(true);
-    
-    // Simulate API call with timeout
-    setTimeout(() => {
-      setIsSubmitting(false);
-      
-      // Show success toast
-      toast.show({
-        placement: 'top',
-        duration: 3000,
-        render: ({ id }) => {
-          const uniqueToastId = "toast-" + id;
-          return (
-            <Toast nativeID={uniqueToastId} action="success" variant="solid">
-              <VStack space="xs">
-                <HStack space="sm" alignItems="center">
-                  <Check size={18} className="text-white" />
-                  <ToastTitle>Success</ToastTitle>
-                </HStack>
-                <ToastDescription>Order has been cancelled successfully</ToastDescription>
-              </VStack>
-            </Toast>
-          );
-        },
-      });
-      
-      // Navigate to home after success
-      setTimeout(() => {
-        router.replace('/(tabs)/home');
-      }, 1000);
-    }, 1500);
-  }, [toast, router]);
+  const fetchOrders = useCallback(async () => {
+    try {
+      setError(null);
+      const result = await getCancelledOrders();
+      setOrders(result.orders || []);
+    } catch (err) {
+      console.error('Failed to fetch cancelled orders:', err);
+      setError('Failed to load cancelled orders. Pull down to refresh.');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
   
-  const handleGoBack = useCallback(() => {
-    router.back();
-  }, [router]);
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+  
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchOrders();
+  }, [fetchOrders]);
+  
+  // Function to truncate long strings
+  const truncateText = (text, maxLength = 30) => {
+    return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
+  };
+
+  if (loading && !refreshing) {
+    return (
+      <SafeAreaView className="flex-1 bg-white">
+        <Box className="flex-1 justify-center items-center">
+          <ActivityIndicator size="large" color="#f97316" />
+          <Text className="text-gray-600 mt-4">Loading cancelled orders...</Text>
+        </Box>
+      </SafeAreaView>
+    );
+  }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-gray-50">
       <Box className="flex-1 p-4">
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <VStack space="lg">
-            <HStack className="justify-between items-center">
-              <Button 
-                variant="ghost"
-                size="sm"
-                onPress={handleGoBack}
-                className="p-0"
-              >
-                <ButtonIcon as={ArrowLeft} size={18} className="text-gray-600" />
-                <ButtonText className="text-gray-600 ml-1">Back</ButtonText>
-              </Button>
-              
-              <Box className="bg-error-50 px-3 py-1.5 rounded-full">
-                <HStack space="xs" alignItems="center">
-                  <CircleX size={14} className="text-error-600" />
-                  <Text className="text-xs font-medium text-error-600">
-                    Cancellation
-                  </Text>
-                </HStack>
-              </Box>
-            </HStack>
-            
-            <VStack space="xs">
-              <Heading size="xl" className="text-gray-800 mt-2">Cancel Order</Heading>
-              <Text className="text-gray-500">Are you sure you want to cancel this order?</Text>
-            </VStack>
-            
-            <Box className="h-6" />
+        <HStack className="items-center justify-between mb-4">
+          <VStack>
+            <Heading size="xl" className="text-gray-800">Cancelled Orders</Heading>
+            <Text className="text-gray-500">Orders that couldn't be processed</Text>
           </VStack>
-        </ScrollView>
+          
+          {orders.length > 0 && (
+            <Badge size="md" variant="solid" className="bg-orange-500 rounded-full">
+              <BadgeText className="text-white">{orders.length} Orders</BadgeText>
+            </Badge>
+          )}
+        </HStack>
         
-        <Box className="border-t border-gray-200 pt-4 mt-4">
-          <HStack space="md">
-            <Button 
-              size="lg"
-              variant="outline"
-              onPress={handleGoBack}
-              className="flex-1 border-gray-300 rounded-xl"
-            >
-              <ButtonText className="text-gray-600">Go Back</ButtonText>
-            </Button>
-            
-            <Button 
-              size="lg"
-              onPress={handleCancel}
-              isDisabled={isSubmitting}
-              className="flex-1 bg-error-600 rounded-xl"
-            >
-              {isSubmitting ? (
-                <ButtonText>Processing...</ButtonText>
-              ) : (
-                <ButtonText>Confirm Cancellation</ButtonText>
-              )}
-            </Button>
-          </HStack>
-        </Box>
+        <ScrollView
+          className="flex-1"
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          {error ? (
+            <Box className="flex-1 justify-center items-center py-10">
+              <Text className="text-error-600 text-center mb-4">{error}</Text>
+              <Button variant="outline" onPress={onRefresh}>
+                <ButtonText>Try Again</ButtonText>
+              </Button>
+            </Box>
+          ) : orders.length === 0 ? (
+            <Box className="flex-1 justify-center items-center py-20">
+              <XCircle size={50} className="text-gray-300 mb-4" />
+              <Text className="text-gray-500 text-center">No cancelled orders found</Text>
+              <Text className="text-gray-400 text-center text-xs mt-2">Pull down to refresh</Text>
+            </Box>
+          ) : (
+            <VStack space="md" className="pb-4">
+              {orders.map((order) => (
+                <Card
+                  key={order.invoiceno}
+                  className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm"
+                >
+                  {/* Order Header */}
+                  <Box className="p-4 bg-gradient-to-r from-orange-50 to-white border-b border-gray-100">
+                    <HStack justifyContent="space-between" alignItems="center">
+                      <HStack space="sm" alignItems="center">
+                        <Box className="bg-orange-500 p-2 rounded-full flex items-center justify-center">
+                          <Package size={16} color="white" />
+                        </Box>
+                        <VStack>
+                          <Text className="font-medium text-gray-900">
+                            {order.invoiceno}
+                          </Text>
+                          <HStack space="sm" alignItems="center" className="mt-1">
+                            <Box className="bg-gray-50 px-2 py-0.5 rounded-full border border-gray-200">
+                              <Text className="text-2xs font-medium text-gray-600">
+                                ZID: {order.zid}
+                              </Text>
+                            </Box>
+                            <Badge variant="outline" className="border-orange-200 bg-orange-50">
+                              <BadgeText className="text-2xs text-orange-700">Cancelled</BadgeText>
+                            </Badge>
+                          </HStack>
+                        </VStack>
+                      </HStack>
+                    </HStack>
+                  </Box>
+                  
+                  {/* Order Content */}
+                  <VStack space="sm" className="p-4">
+                    <HStack space="sm" alignItems="center">
+                      <Store size={16} className="text-gray-500" />
+                      <Text className="text-sm text-gray-800 font-medium">
+                        {order.xcusname} ({order.xcus})
+                      </Text>
+                    </HStack>
+                    
+                    <Divider className="my-1 bg-gray-100" />
+                    
+                    <VStack space="xs">
+                      <Text className="text-xs font-medium text-gray-500 mb-1">
+                        ORDER ITEMS
+                      </Text>
+                      <Box className="bg-gray-50 rounded-lg p-3">
+                        <Text className="text-xs text-gray-600 leading-relaxed">
+                          {truncateText(order.items, 100)}
+                        </Text>
+                      </Box>
+                    </VStack>
+                    
+                    <HStack className="justify-between mt-2">
+                      <VStack space="xs">
+                        <HStack space="xs" alignItems="center">
+                          <Tag size={12} className="text-gray-500" />
+                          <Text className="text-xs text-gray-500">
+                            Total Items
+                          </Text>
+                        </HStack>
+                        <Text className="font-semibold text-gray-800">
+                          {order.total_qty} units
+                        </Text>
+                      </VStack>
+                      
+                      <VStack space="xs">
+                        <HStack space="xs" alignItems="center">
+                          <CreditCard size={12} className="text-gray-500" />
+                          <Text className="text-xs text-gray-500">
+                            Total Amount
+                          </Text>
+                        </HStack>
+                        <Text className="font-semibold text-gray-800">
+                          ৳{order.total_linetotal.toLocaleString()}
+                        </Text>
+                      </VStack>
+                      
+                      <VStack space="xs">
+                        <HStack space="xs" alignItems="center">
+                          <AlertCircle size={12} className="text-gray-500" />
+                          <Text className="text-xs text-gray-500">
+                            Reason
+                          </Text>
+                        </HStack>
+                        <Text className="font-semibold text-orange-600 text-xs">
+                          Not enough stock
+                        </Text>
+                      </VStack>
+                    </HStack>
+                  </VStack>
+                </Card>
+              ))}
+            </VStack>
+          )}
+        </ScrollView>
       </Box>
     </SafeAreaView>
   );

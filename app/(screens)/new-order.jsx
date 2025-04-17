@@ -1,151 +1,201 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ScrollView, RefreshControl, ActivityIndicator } from "react-native";
 import { Box } from "@/components/ui/box";
 import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
+import { Badge, BadgeText, BadgeIcon } from "@/components/ui/badge";
 import { Button, ButtonText, ButtonIcon } from "@/components/ui/button";
-import { Input, InputField, InputSlot, InputIcon } from "@/components/ui/input";
-import { FormControl, FormControlLabel, FormControlLabelText } from "@/components/ui/form-control";
+import { Card } from "@/components/ui/card";
+import { Divider } from "@/components/ui/divider";
 import { useRouter } from 'expo-router';
-import { Calendar, Package, Plus, ArrowRight } from 'lucide-react-native';
-import { ScrollView } from "react-native";
+import { Package, ShoppingBag, ArrowRight, Clock, Tag, CreditCard, Store } from 'lucide-react-native';
+import { getPendingOrders } from '@/lib/api_orders';
 
 export default function NewOrder() {
   const router = useRouter();
-  const [orderNumber, setOrderNumber] = useState('');
-  const [customerName, setCustomerName] = useState('');
-  const [orderDate, setOrderDate] = useState(new Date().toISOString().split('T')[0]);
-  const [items, setItems] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState(null);
   
-  const handleAddItem = useCallback(() => {
-    // Navigate to item selection screen or show item picker
-    // For now, just add a placeholder item
-    setItems(prev => [...prev, { 
-      id: Date.now(),
-      name: `Item ${prev.length + 1}`,
-      quantity: 1,
-      price: Math.floor(Math.random() * 500) + 100
-    }]);
+  const fetchOrders = useCallback(async () => {
+    try {
+      setError(null);
+      const result = await getPendingOrders();
+      setOrders(result.orders || []);
+    } catch (err) {
+      console.error('Failed to fetch pending orders:', err);
+      setError('Failed to load pending orders. Pull down to refresh.');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
   }, []);
   
-  const handleContinue = useCallback(() => {
-    // In a real app, you would validate and pass this data to the next screen
-    const orderData = {
-      orderNumber,
-      customerName,
-      orderDate,
-      items
-    };
-    
-    // Pass order data to confirmation screen
-    router.push({
-      pathname: '/confirm-order',
-      params: { orderData: JSON.stringify(orderData) }
-    });
-  }, [orderNumber, customerName, orderDate, items, router]);
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
   
-  return (
-    <SafeAreaView className="flex-1 bg-white">
-      <Box className="flex-1 p-4">
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <VStack space="lg">
-            <HStack className="justify-between items-center">
-              <Heading size="xl" className="text-gray-800">New Order</Heading>
-              <Box className="bg-primary-50 px-3 py-1.5 rounded-full">
-                <HStack space="xs" alignItems="center">
-                  <Calendar size={14} className="text-primary-600" />
-                  <Text className="text-xs font-medium text-primary-600">
-                    {orderDate}
-                  </Text>
-                </HStack>
-              </Box>
-            </HStack>
-            
-            <VStack space="md" className="mt-4">
-              <FormControl>
-                <FormControlLabel>
-                  <FormControlLabelText className="text-gray-700 font-medium">
-                    Order Number
-                  </FormControlLabelText>
-                </FormControlLabel>
-                <Input size="md" className="border border-gray-200 rounded-lg">
-                  <InputField 
-                    placeholder="Enter order number"
-                    value={orderNumber}
-                    onChangeText={setOrderNumber}
-                  />
-                </Input>
-              </FormControl>
-              
-              <FormControl>
-                <FormControlLabel>
-                  <FormControlLabelText className="text-gray-700 font-medium">
-                    Customer Name
-                  </FormControlLabelText>
-                </FormControlLabel>
-                <Input size="md" className="border border-gray-200 rounded-lg">
-                  <InputField 
-                    placeholder="Enter customer name"
-                    value={customerName}
-                    onChangeText={setCustomerName}
-                  />
-                </Input>
-              </FormControl>
-              
-              <Box className="mt-6">
-                <HStack className="justify-between items-center mb-4">
-                  <Text className="text-gray-700 font-medium">Items</Text>
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    onPress={handleAddItem}
-                    className="border border-primary-300 rounded-full"
-                  >
-                    <ButtonIcon as={Plus} size={16} className="text-primary-600 mr-1" />
-                    <ButtonText className="text-primary-600">Add Item</ButtonText>
-                  </Button>
-                </HStack>
-                
-                <VStack space="md" className="bg-gray-50 rounded-xl p-4">
-                  {items.length === 0 ? (
-                    <Box className="items-center py-8">
-                      <Package size={40} className="text-gray-400 mb-2" />
-                      <Text className="text-gray-500">No items added yet</Text>
-                    </Box>
-                  ) : (
-                    items.map((item, index) => (
-                      <Box key={item.id} className="bg-white p-4 rounded-lg shadow-sm">
-                        <HStack className="justify-between items-center">
-                          <VStack>
-                            <Text className="font-medium">{item.name}</Text>
-                            <Text className="text-sm text-gray-500">Qty: {item.quantity}</Text>
-                          </VStack>
-                          <Text className="font-semibold">৳{item.price}</Text>
-                        </HStack>
-                      </Box>
-                    ))
-                  )}
-                </VStack>
-              </Box>
-              
-              <Box className="h-6" />
-            </VStack>
-          </VStack>
-        </ScrollView>
-        
-        <Box className="border-t border-gray-200 pt-4 mt-4">
-          <Button 
-            size="lg"
-            onPress={handleContinue}
-            isDisabled={!orderNumber || !customerName || items.length === 0}
-            className="bg-primary-600 rounded-full"
-          >
-            <ButtonText>Continue to Confirmation</ButtonText>
-            <ButtonIcon as={ArrowRight} className="ml-1" />
-          </Button>
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchOrders();
+  }, [fetchOrders]);
+  
+  // Function to truncate long strings
+  const truncateText = (text, maxLength = 30) => {
+    return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
+  };
+
+  if (loading && !refreshing) {
+    return (
+      <SafeAreaView className="flex-1 bg-white">
+        <Box className="flex-1 justify-center items-center">
+          <ActivityIndicator size="large" color="#10b981" />
+          <Text className="text-gray-600 mt-4">Loading pending orders...</Text>
         </Box>
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <SafeAreaView className="flex-1 bg-gray-50">
+      <Box className="flex-1 p-4">
+        <HStack className="items-center justify-between mb-4">
+          <VStack>
+            <Heading size="xl" className="text-gray-800">New Orders</Heading>
+            <Text className="text-gray-500">Pending orders to process</Text>
+          </VStack>
+          
+          {orders.length > 0 && (
+            <Badge size="md" variant="solid" className="bg-gray-800 rounded-full">
+              <BadgeText className="text-white">{orders.length} Orders</BadgeText>
+            </Badge>
+          )}
+        </HStack>
+        
+        <ScrollView
+          className="flex-1"
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          {error ? (
+            <Box className="flex-1 justify-center items-center py-10">
+              <Text className="text-error-600 text-center mb-4">{error}</Text>
+              <Button variant="outline" onPress={onRefresh}>
+                <ButtonText>Try Again</ButtonText>
+              </Button>
+            </Box>
+          ) : orders.length === 0 ? (
+            <Box className="flex-1 justify-center items-center py-20">
+              <ShoppingBag size={50} className="text-gray-300 mb-4" />
+              <Text className="text-gray-500 text-center">No pending orders found</Text>
+              <Text className="text-gray-400 text-center text-xs mt-2">Pull down to refresh</Text>
+            </Box>
+          ) : (
+            <VStack space="md" className="pb-4">
+              {orders.map((order, index) => (
+                <Card
+                  key={order.invoiceno}
+                  className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm"
+                >
+                  {/* Order Header */}
+                  <Box className="p-4 bg-gradient-to-r from-gray-100 to-white border-b border-gray-100">
+                    <HStack justifyContent="space-between" alignItems="center">
+                      <HStack space="sm" alignItems="center">
+                        <Box className="bg-gray-800 p-2 rounded-full flex items-center justify-center">
+                          <Package size={16} color="white" />
+                        </Box>
+                        <VStack>
+                          <Text className="font-medium text-gray-900">
+                            {order.invoiceno}
+                          </Text>
+                          <HStack space="sm" alignItems="center" className="mt-1">
+                            <Box className="bg-gray-50 px-2 py-0.5 rounded-full border border-gray-200">
+                              <Text className="text-2xs font-medium text-gray-600">
+                                ZID: {order.zid}
+                              </Text>
+                            </Box>
+                            <Badge variant="outline" className="border-amber-200 bg-amber-50">
+                              <BadgeText className="text-2xs text-amber-700">{order.xstatusord}</BadgeText>
+                            </Badge>
+                          </HStack>
+                        </VStack>
+                      </HStack>
+                      
+                      {/* Arrow button removed */}
+                    </HStack>
+                  </Box>
+                  
+                  {/* Order Content */}
+                  <VStack space="sm" className="p-4">
+                    <HStack space="sm" alignItems="center">
+                      <Store size={16} className="text-gray-500" />
+                      <Text className="text-sm text-gray-800 font-medium">
+                        {order.xcusname} ({order.xcus})
+                      </Text>
+                    </HStack>
+                    
+                    <Divider className="my-1 bg-gray-100" />
+                    
+                    <VStack space="xs">
+                      <Text className="text-xs font-medium text-gray-500 mb-1">
+                        ORDER ITEMS
+                      </Text>
+                      <Box className="bg-gray-50 rounded-lg p-3">
+                        <Text className="text-xs text-gray-600 leading-relaxed">
+                          {truncateText(order.items, 100)}
+                        </Text>
+                      </Box>
+                    </VStack>
+                    
+                    <HStack className="justify-between mt-2">
+                      <VStack space="xs">
+                        <HStack space="xs" alignItems="center">
+                          <Tag size={12} className="text-gray-500" />
+                          <Text className="text-xs text-gray-500">
+                            Total Items
+                          </Text>
+                        </HStack>
+                        <Text className="font-semibold text-gray-800">
+                          {order.total_qty} units
+                        </Text>
+                      </VStack>
+                      
+                      <VStack space="xs">
+                        <HStack space="xs" alignItems="center">
+                          <CreditCard size={12} className="text-gray-500" />
+                          <Text className="text-xs text-gray-500">
+                            Total Amount
+                          </Text>
+                        </HStack>
+                        <Text className="font-semibold text-gray-800">
+                          ৳{order.total_linetotal.toLocaleString()}
+                        </Text>
+                      </VStack>
+                      
+                      <VStack space="xs">
+                        <HStack space="xs" alignItems="center">
+                          <Clock size={12} className="text-gray-500" />
+                          <Text className="text-xs text-gray-500">
+                            Status
+                          </Text>
+                        </HStack>
+                        <Text className="font-semibold text-amber-600">
+                          {order.xstatusord}
+                        </Text>
+                      </VStack>
+                    </HStack>
+                  </VStack>
+                </Card>
+              ))}
+            </VStack>
+          )}
+        </ScrollView>
       </Box>
     </SafeAreaView>
   );
