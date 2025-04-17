@@ -8,7 +8,7 @@ import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
 import { useAuth } from "@/context/AuthContext";
 import { Heading } from "@/components/ui/heading";
-import { LogOut, Package, Clock, RefreshCw, DollarSign, Plus, List, ChevronRight } from 'lucide-react-native';
+import { LogOut, Package, Clock, RefreshCw, DollarSign, Plus, List, ChevronRight, CheckCircle2, XCircle } from 'lucide-react-native';
 import { Avatar } from "@/components/ui/avatar";
 import { AvatarFallbackText } from "@/components/ui/avatar";
 import { router } from "expo-router";
@@ -28,7 +28,7 @@ import QuickActionCard from '@/components/dashboard/QuickActionCard';
 
 const screenWidth = Dimensions.get("window").width;
 
-const Home = () => {
+const Home = () => { 
   const { user, logout, loading } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
   const [yearlyStats, setYearlyStats] = useState(null);
@@ -460,30 +460,49 @@ const Home = () => {
             </ChartCard>
           </VStack>
 
-          {/* Quick Actions */}
-          <VStack space="md">
-            <HStack className="justify-between items-center mb-4">
-              <VStack>
-                <Heading size="sm" className="text-gray-800">Quick Actions</Heading>
-                <Text className="text-gray-500 text-xs">Fast access to common tasks</Text>
-              </VStack>
-              <Button
-                variant="link"
-                size="sm"
-                className="items-center"
-              >
-                <HStack space="xs" className="items-center">
-                  <Text className="text-primary-500 text-sm">View All</Text>
-                  <ChevronRight size={16} color = "gray" />
-                </HStack>
-              </Button>
-            </HStack>
-            <HStack>
-              {quickActions.map((action, index) => (
-                <QuickActionCard key={index} action={action} />
-              ))}
-            </HStack>
+          {/* Order Management */}
+          <VStack space="lg" className="mb-8">
+            <Heading size="sm" className="text-gray-800 mb-2">Order Management</Heading>
             
+            <Box className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+              <HStack space="md" className="w-full justify-center">
+                <VStack space="xs" className="items-center flex-1">
+                  <Button 
+                    size="md"
+                    variant="solid"
+                    className="rounded-full h-[60px] w-[60px] bg-gray-800"
+                    onPress={() => router.push('/new-order')}
+                  >
+                    <Plus size={24} color="white" />
+                  </Button>
+                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">New Order</Text>
+                </VStack>
+                
+                <VStack space="xs" className="items-center flex-1">
+                  <Button 
+                    size="md"
+                    variant="solid"
+                    className="rounded-full h-[60px] w-[60px] bg-emerald-500"
+                    onPress={() => router.push('/confirm-order')}
+                  >
+                    <CheckCircle2 size={24} color="white" />
+                  </Button>
+                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Confirm Order</Text>
+                </VStack>
+                
+                <VStack space="xs" className="items-center flex-1">
+                  <Button 
+                    size="md"
+                    variant="solid"
+                    className="rounded-full h-[60px] w-[60px] bg-orange-500"
+                    onPress={() => router.push('/cancel-order')}
+                  >
+                    <XCircle size={24} color="white" />
+                  </Button>
+                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Cancel Order</Text>
+                </VStack>
+              </HStack>
+            </Box>
           </VStack>
         </Box>
       </ScrollView>
