@@ -87,7 +87,7 @@ export default function CustomerSelector({
   const debouncedSearch = useCallback(
     debounce((text) => {
       setSearchText(text);
-      if (text.length >= 1) {
+      if (text.length >= 2) { // Changed from 1 to 2 characters minimum
         onSearch(text);
       } else {
         // Clear customers when search is empty
@@ -227,8 +227,8 @@ export default function CustomerSelector({
               ListEmptyComponent={
                 <View className="py-5 items-center">
                   <Text className="text-gray-600 text-center">
-                    {localSearchText.length < 1
-                      ? "Type at least 1 character to search"
+                    {localSearchText.length < 2
+                      ? "Type at least 2 characters to search"
                       : loading
                       ? "Searching..."
                       : "No customers found"}

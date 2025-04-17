@@ -3,6 +3,8 @@ import { Box } from "@/components/ui/box";
 import { ScrollView } from "react-native";
 import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
+import { useToast, Toast, ToastTitle, ToastDescription } from "@/components/ui/toast";
+import { Check, AlertCircle } from "lucide-react-native";
 import BusinessSelector from "@/components/create-order/BusinessSelector";
 import CustomerSelector from "@/components/create-order/CustomerSelector";
 import ItemSelector from "@/components/create-order/ItemSelector";
@@ -56,6 +58,7 @@ export default function CreateOrder() {
   const itemSearchDebounceRef = useRef(null);
   const SEARCH_DELAY = 120;
   const mountedRef = useRef(true);
+  const toast = useToast();
 
   // Only load cart items on initial mount, not on tab revisits
   useEffect(() => {
@@ -245,14 +248,53 @@ export default function CreateOrder() {
       setCustomer("");
       setCustomerName("");
       setCustomerAddress("");
+
+      toast.show({
+        placement: 'top',
+        duration: 3000,
+        render: ({ id }) => {
+          const uniqueToastId = "toast-" + id;
+          return (
+            <Toast nativeID={uniqueToastId} action="success" variant="solid">
+              <VStack space="xs">
+                <HStack space="sm" alignItems="center">
+                  <Check size={18} className="text-white" />
+                  <ToastTitle>Success</ToastTitle>
+                </HStack>
+                <ToastDescription>Order has been created successfully!</ToastDescription>
+              </VStack>
+            </Toast>
+          );
+        },
+      });
     } catch (error) {
       console.error("Error saving order:", error);
+      
+      // Show error toast
+      toast.show({
+        placement: 'top',
+        duration: 3000,
+        render: ({ id }) => {
+          const uniqueToastId = "toast-" + id;
+          return (
+            <Toast nativeID={uniqueToastId} action="error" variant="solid">
+              <VStack space="xs">
+                <HStack space="sm" alignItems="center">
+                  <AlertCircle size={18} className="text-white" />
+                  <ToastTitle>Error</ToastTitle>
+                </HStack>
+                <ToastDescription>Failed to create order. Please try again.</ToastDescription>
+              </VStack>
+            </Toast>
+          );
+        },
+      });
     } finally {
       if (mountedRef.current) {
         setSubmitting(false);
       }
     }
-  }, [cartItems, zid, customer, customerName, customerAddress, loadOrders]);
+  }, [cartItems, zid, customer, customerName, customerAddress, loadOrders, toast]);
 
   const searchCustomers = useCallback(async (searchText) => {
     if (!zid || searchText.length < 2 || !user) {
@@ -315,7 +357,7 @@ export default function CreateOrder() {
       clearTimeout(searchDebounceRef.current);
     }
 
-    if (text.length >= 1) {
+    if (text.length >= 2) {  // Changed from >= 1 to >= 2 to match searchCustomers
       searchDebounceRef.current = setTimeout(() => {
         searchCustomers(text);
       }, SEARCH_DELAY);
@@ -330,7 +372,7 @@ export default function CreateOrder() {
       clearTimeout(itemSearchDebounceRef.current);
     }
 
-    if (text.length >= 1) {
+    if (text.length >= 2) {  // Changed from >= 1 to >= 2 to match searchItems
       itemSearchDebounceRef.current = setTimeout(() => {
         searchItems(text);
       }, SEARCH_DELAY);
