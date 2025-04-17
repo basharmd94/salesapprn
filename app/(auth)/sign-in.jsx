@@ -34,14 +34,21 @@ const SignIn = () => {
     try {
       setIsLoading(true);
       setError('');
+      
+      // Additional logging to help diagnose issues
+      console.log(`Login attempt: ${username} in ${__DEV__ ? 'development' : 'production'} mode`);
+      
       await login(username, password);
     } catch (err) {
-      // Handle validation errors
-      if (err.response?.data?.detail && Array.isArray(err.response.data.detail)) {
-        // Join multiple validation errors into a single message
+      console.error('Login error details:', err);
+      
+      // Handle different error types
+      if (err.message?.includes('Network Error')) {
+        setError('Cannot connect to server. Please check your internet connection and verify the server is accessible.');
+      } else if (err.response?.data?.detail && Array.isArray(err.response.data.detail)) {
         setError(err.response.data.detail.map(e => e.msg).join(', '));
       } else {
-        setError(err.response?.data?.detail || 'Login failed. Please try again.');
+        setError(err.message || 'Login failed. Please try again.');
       }
     } finally {
       setIsLoading(false);
