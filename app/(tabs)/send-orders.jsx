@@ -68,7 +68,7 @@ const MemoizedOrderItem = memo(function OrderItem({ item, itemIndex, onDelete, o
 
         <HStack justifyContent="space-between" alignItems="center" className="bg-error-50 opacity-80 p-2 rounded-xl">
           <HStack space="sm" alignItems="center">
-            <Text onPress={() => onUpdateQuantity(-1)} className="text-2xl font-semibold text-warning--900">-</Text>
+            <Text onPress={() => onUpdateQuantity(-1)} className="text-2xl font-semibold text-warning-900">-</Text>
             <Text className="text-base font-semibold text-warning-900">{item.xqty}</Text>
             <Text onPress={() => onUpdateQuantity(1)} className="text-base font-semibold text-warning-900">+</Text>
           </HStack>
@@ -398,7 +398,7 @@ export default function SendOrders() {
   // Memoized FAB component
   const renderFAB = useCallback(() => {
     return (
-      <Box className="fixed bottom-5 right-0 m-4 relative">
+      <Box className="fixed bottom-5 right-0 m-4 ">
         {orders.length > 0 && (
           <Box className="absolute -top-[75px] -right-[-10px] bg-error-500 rounded-full min-w-[22px] h-[22px] flex items-center justify-center px-1.5 border-2 border-white z-50 transition-transform duration-200">
             <Text className="text-[11px] font-bold text-white">{orders.length}</Text>

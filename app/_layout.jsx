@@ -1,4 +1,3 @@
-
 import "../global.css";
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { Stack } from 'expo-router';
@@ -41,6 +40,8 @@ export default function RootLayout() {
 
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(screens)" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
             <Stack.Screen name="index" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>
