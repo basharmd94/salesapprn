@@ -473,9 +473,9 @@ const Home = () => {
                     className="rounded-full h-[60px] w-[60px] bg-gray-800"
                     onPress={() => router.push('/new-order')}
                   >
-                    <Plus size={24} color="white" />
+                    <Clock size={24} color="white" />
                   </Button>
-                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">New Order</Text>
+                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Pending Orders</Text>
                 </VStack>
                 
                 <VStack space="xs" className="items-center flex-1">
@@ -487,7 +487,7 @@ const Home = () => {
                   >
                     <CheckCircle2 size={24} color="white" />
                   </Button>
-                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Confirm Order</Text>
+                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Confirmed Orders</Text>
                 </VStack>
                 
                 <VStack space="xs" className="items-center flex-1">
@@ -499,7 +499,7 @@ const Home = () => {
                   >
                     <XCircle size={24} color="white" />
                   </Button>
-                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Cancel Order</Text>
+                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Cancelled Orders</Text>
                 </VStack>
               </HStack>
             </Box>

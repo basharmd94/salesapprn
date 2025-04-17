@@ -6,7 +6,7 @@ export default function ScreensLayout() {
       <Stack.Screen 
         name="new-order" 
         options={{ 
-          title: "New Order",
+          title: "Pending Orders",
           headerBackTitleVisible: false,
           animation: "slide_from_right"
         }} 
@@ -14,7 +14,7 @@ export default function ScreensLayout() {
       <Stack.Screen 
         name="confirm-order" 
         options={{ 
-          title: "Confirm Order",
+          title: "Confirmed Orders",
           headerBackTitleVisible: false,
           animation: "slide_from_right"
         }} 
@@ -22,7 +22,7 @@ export default function ScreensLayout() {
       <Stack.Screen 
         name="cancel-order" 
         options={{ 
-          title: "Cancel Order",
+          title: "Canceled Orders",
           headerBackTitleVisible: false,
           animation: "slide_from_right"
         }} 
