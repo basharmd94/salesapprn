@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'expo-router';
-import { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Box } from '@/components/ui/box';
 import { Button } from '@/components/ui/button';
 import { ButtonText, ButtonIcon, ButtonSpinner } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import { FormControl } from '@/components/ui/form-control';
 import { FormControlLabel, FormControlLabelText } from '@/components/ui/form-control';
 import { Heading } from '@/components/ui/heading';
 import { VStack } from '@/components/ui/vstack';
+import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
 import { Input } from '@/components/ui/input';
 import { InputField, InputSlot, InputIcon } from '@/components/ui/input';
@@ -17,6 +18,8 @@ import { EyeIcon, EyeOffIcon, LogInIcon } from 'lucide-react-native';
 import { Alert, AlertText, AlertIcon } from '@/components/ui/alert';
 import { InfoIcon } from '@/components/ui/icon';
 import { useAuth } from '@/context/AuthContext';
+import { Checkbox } from '@/components/ui/checkbox';
+import { CheckIcon } from '@/components/ui/icon';
 
 const SignIn = () => {
   const [username, setUsername] = useState('');
@@ -24,7 +27,27 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [rememberMe, setRememberMe] = useState(true);
   const { login } = useAuth();
+
+  // Load saved credentials when component mounts
+  useEffect(() => {
+    const loadSavedCredentials = async () => {
+      try {
+        const savedUsername = await AsyncStorage.getItem('savedUsername');
+        const savedPassword = await AsyncStorage.getItem('savedPassword');
+        const savedRememberMe = await AsyncStorage.getItem('rememberMe');
+        
+        if (savedUsername) setUsername(savedUsername);
+        if (savedPassword) setPassword(savedPassword);
+        if (savedRememberMe !== null) setRememberMe(savedRememberMe === 'true');
+      } catch (error) {
+        console.error('Error loading saved credentials:', error);
+      }
+    };
+    
+    loadSavedCredentials();
+  }, []);
 
   const handleLogin = async () => {
     if (!username || !password) {
@@ -39,6 +62,18 @@ const SignIn = () => {
       console.log(`Login attempt: ${username} in ${__DEV__ ? 'development' : 'production'} mode`);
       
       await login(username, password);
+      
+      // Save credentials if remember me is checked
+      if (rememberMe) {
+        await AsyncStorage.setItem('savedUsername', username);
+        await AsyncStorage.setItem('savedPassword', password);
+        await AsyncStorage.setItem('rememberMe', 'true');
+      } else {
+        // Clear saved credentials if remember me is unchecked
+        await AsyncStorage.removeItem('savedUsername');
+        await AsyncStorage.removeItem('savedPassword');
+        await AsyncStorage.setItem('rememberMe', 'false');
+      }
     } catch (err) {
       console.error('Login error details:', err);
       
@@ -120,6 +155,22 @@ const SignIn = () => {
                 </InputSlot>
               </Input>
             </FormControl>
+
+            {/* Remember Me checkbox with improved styling */}
+            <Box className="mb-6">
+              <HStack space="sm" alignItems="center">
+                <Checkbox
+                  value="rememberMe"
+                  isChecked={rememberMe}
+                  onChange={setRememberMe}
+                  aria-label="Remember me"
+                  accessibilityLabel="Remember me"
+                >
+                  <CheckIcon color="$primary500" />
+                </Checkbox>
+                <Text size="sm" className="text-gray-500 ml-2">Remember Me</Text>
+              </HStack>
+            </Box>
 
             <Button
               size="lg"
