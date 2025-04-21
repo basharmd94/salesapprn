@@ -65,7 +65,7 @@ export default function CancelOrder() {
       <Box className="flex-1 p-4">
         <HStack className="items-center justify-between mb-4">
           <VStack>
-            <Heading size="lg" className="text-gray-800">Last 10 Cancelled Orders</Heading>
+            <Heading size="md" className="text-gray-800">Last 10 Cancelled Orders</Heading>
             <Text className="text-gray-500">Orders that couldn't be processed</Text>
           </VStack>
           

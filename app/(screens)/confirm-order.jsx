@@ -65,7 +65,7 @@ export default function ConfirmOrder() {
       <Box className="flex-1 p-4">
         <HStack className="items-center justify-between mb-4">
           <VStack>
-            <Heading size="lg" className="text-gray-800">Last 10 Confirmed Orders</Heading>
+            <Heading size="md" className="text-gray-800">Last 10 Confirmed Orders</Heading>
             <Text className="text-gray-500">Orders ready for processing</Text>
           </VStack>
           

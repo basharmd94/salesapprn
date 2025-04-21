@@ -186,7 +186,7 @@ const Home = () => {
       trendUp: true
     },
     { 
-      title: "Pending Orders", 
+      title: "Orders Sent", 
       value: statsLoading ? <RefreshCw className="animate-spin" size={20} color="white" /> : 
              yearlyStats ? yearlyStats.pending_orders.toString() : "0",
       color: "bg-gradient-to-br from-warning-500 via-warning-600 to-warning-700",
@@ -385,7 +385,7 @@ const Home = () => {
                   >
                     <Clock size={24} color="white" />
                   </Button>
-                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Pending Orders</Text>
+                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Orders Sent</Text>
                 </VStack>
                 
                 <VStack space="xs" className="items-center flex-1">

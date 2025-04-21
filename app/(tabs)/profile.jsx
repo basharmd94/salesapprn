@@ -11,7 +11,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { AvatarFallbackText } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Divider } from "@/components/ui/divider";
-import { LogOut, Mail, Phone, Building, Terminal, Shield, Database, Package } from 'lucide-react-native';
+import { LogOut, Mail, Phone, Building, Terminal, Shield, Database, Package, MapPin } from 'lucide-react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useState } from 'react';
 import syncCustomers from '@/utils/syncCustomer';
@@ -19,6 +19,7 @@ import syncItems from '@/utils/syncItems';
 import colors from "tailwindcss/colors";
 import { Alert, AlertText, AlertIcon } from "@/components/ui/alert";
 import { InfoIcon } from "@/components/ui/icon";
+import { router } from "expo-router";
 
 const ProfileItem = ({ icon: Icon, label, value }) => (
   <HStack space="md" className="items-center py-3">
@@ -161,11 +162,18 @@ export default function Profile() {
                   isLoading={isSyncingCustomers}
                   color="bg-orange-400"
                 />
+
+                <ActionButton 
+                  icon={MapPin} 
+                  label="My Location" 
+                  onPress={() => router.push('/location')}
+                  color="bg-blue-500"
+                />
+
                 <ActionButton 
                   icon={LogOut} 
                   label="Logout" 
                   onPress={logout}
-                  
                   color="bg-gray-800"
                 />
               </HStack>
