@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Box } from '@/components/ui/box';
@@ -14,12 +13,13 @@ import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
 import { Input } from '@/components/ui/input';
 import { InputField, InputSlot, InputIcon } from '@/components/ui/input';
-import { EyeIcon, EyeOffIcon, LogInIcon } from 'lucide-react-native';
+import { EyeIcon, EyeOffIcon, LogInIcon, UserIcon, LockIcon } from 'lucide-react-native';
 import { Alert, AlertText, AlertIcon } from '@/components/ui/alert';
 import { InfoIcon } from '@/components/ui/icon';
 import { useAuth } from '@/context/AuthContext';
 import { Checkbox } from '@/components/ui/checkbox';
 import { CheckIcon } from '@/components/ui/icon';
+import { Image } from '@/components/ui/image';
 
 const SignIn = () => {
   const [username, setUsername] = useState('');
@@ -93,56 +93,71 @@ const SignIn = () => {
   const isFormValid = username.length > 0 && password.length > 0;
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100" edges={['bottom', 'left', 'right']}>
-      <Center className="flex-1 px-4">
-        <Box className="w-full max-w-[400px]">
-          <VStack space="md">
+    <SafeAreaView className="flex-1 bg-gradient-to-b from-blue-50 to-purple-50" edges={['bottom', 'left', 'right']}>
+      <Center className="flex-1 px-6">
+        <Box className="w-full max-w-[400px] p-8 bg-white rounded-3xl shadow-lg">
+          <VStack space="lg">
             <Center className="mb-6">
-              <Heading size="2xl" className="text-primary">
+              <Image 
+                source={require('@/assets/images/logo_light.png')} 
+                alt="App Logo"
+                className="w-24 h-24 mb-4"
+              />
+              <Heading size="2xl" className="text-primary-600 font-bold">
                 Welcome Back
               </Heading>
-              <Text size="sm" className="text-gray-400">
-                Please sign in to your account
+              <Text size="sm" className="text-gray-500 mt-2">
+                Sign in to continue to your account
               </Text>
             </Center>
 
             {error && (
-              <Alert action="error" variant="solid" mb="$3">
-                <AlertIcon as={InfoIcon} />
-                <AlertText>{error}</AlertText>
+              <Alert action="error" variant="outline" className="mb-4 rounded-xl border-red-200 bg-red-50">
+                <AlertIcon as={InfoIcon} className="text-red-500" />
+                <AlertText className="text-red-600 font-medium">{error}</AlertText>
               </Alert>
             )}
 
             <FormControl className="mb-4">
               <FormControlLabel>
-                <FormControlLabelText className="text-gray-400">Username</FormControlLabelText>
+                <FormControlLabelText className="text-gray-600 font-medium ml-1 mb-1">Username</FormControlLabelText>
               </FormControlLabel>
               <Input
                 variant="outline"
                 size="xl"
+                className="bg-gray-50 border-gray-200 rounded-xl"
               >
+                <InputSlot className="pl-3">
+                  <InputIcon as={UserIcon} className="text-primary-500" />
+                </InputSlot>
                 <InputField
                   placeholder="Enter your username"
                   value={username}
                   onChangeText={setUsername}
-                  className="text-primary-400"
-                  placeholderTextColor="gray-100"
+                  className="text-gray-800 pl-2"
+                  placeholderTextColor="#9CA3AF"
                 />
               </Input>
             </FormControl>
 
-            <FormControl className="mb-6">
+            <FormControl className="mb-5">
               <FormControlLabel>
-                <FormControlLabelText className="text-gray-400">Password</FormControlLabelText>
+                <FormControlLabelText className="text-gray-600 font-medium ml-1 mb-1">Password</FormControlLabelText>
               </FormControlLabel>
-              <Input size="xl">
+              <Input 
+                size="xl"
+                className="bg-gray-50 border-gray-200 rounded-xl"
+              >
+                <InputSlot className="pl-3">
+                  <InputIcon as={LockIcon} className="text-primary-500" />
+                </InputSlot>
                 <InputField
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   value={password}
                   onChangeText={setPassword}
-                  className="text-primary-500"
-                  placeholderTextColor={"#0000"}
+                  className="text-gray-800 pl-2"
+                  placeholderTextColor="#9CA3AF"
                 />
                 <InputSlot 
                   onPress={() => setShowPassword(!showPassword)}
@@ -165,10 +180,11 @@ const SignIn = () => {
                   onChange={setRememberMe}
                   aria-label="Remember me"
                   accessibilityLabel="Remember me"
+                  className="border-primary-400 bg-primary-50"
                 >
                   <CheckIcon color="$primary500" />
                 </Checkbox>
-                <Text size="sm" className="text-gray-500 ml-2">Remember Me</Text>
+                <Text size="sm" className="text-gray-600 ml-2 font-medium">Remember Me</Text>
               </HStack>
             </Box>
 
@@ -178,35 +194,27 @@ const SignIn = () => {
               action="primary"
               isDisabled={!isFormValid || isLoading}
               onPress={handleLogin}
-              className="mb-6 bg-primary-800 disabled:bg-gray-700"
+              className="mb-6 rounded-xl bg-gradient-to-r from-primary-600 to-primary-800 shadow-md disabled:opacity-70"
             >
               {isLoading ? (
-                <ButtonSpinner className="mr-2" />
+                <ButtonSpinner className="mr-2 text-white" />
               ) : (
-                <ButtonIcon as={LogInIcon} className="mr-2" />
+                <ButtonIcon as={LogInIcon} className="mr-2 text-white" />
               )}
-              <ButtonText>
+              <ButtonText className="font-bold">
                 {isLoading ? "Signing In..." : "Sign In"}
               </ButtonText>
             </Button>
 
-            <Center className="mt-6">
-              <Text className="text-gray-400">
-                Don't have an account?{' '}
-                
-                  <Text className="text-info-600 font-bold">
-                    Ask Your Admin to Create One
-                  </Text>
-                
-              </Text>
-            </Center>
-
-            <Center className="mt-4">
-              <Link href="../(auth)/forgot-password" asChild>
-                <Text className="text-gray-400 underline">
-                  Forgot Password?
+            <Center className="mt-5">
+              <HStack space="xs" alignItems="center">
+                <Text className="text-gray-500">
+                  Don't have an account?
                 </Text>
-              </Link>
+                <Text className="text-primary-600 font-bold">
+                  Ask Your Admin
+                </Text>
+              </HStack>
             </Center>
           </VStack>
         </Box>
