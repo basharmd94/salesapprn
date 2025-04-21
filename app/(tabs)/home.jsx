@@ -370,6 +370,51 @@ const Home = () => {
             </ScrollView>
           </VStack>
 
+          {/* Order Management */}
+          <VStack space="lg" className="mb-8">
+            <Heading size="sm" className="text-gray-800 mb-2">Order Management</Heading>
+            
+            <Box className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+              <HStack space="md" className="w-full justify-center">
+                <VStack space="xs" className="items-center flex-1">
+                  <Button 
+                    size="md"
+                    variant="solid"
+                    className="rounded-full h-[60px] w-[60px] bg-gray-800"
+                    onPress={() => router.push('/new-order')}
+                  >
+                    <Clock size={24} color="white" />
+                  </Button>
+                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Pending Orders</Text>
+                </VStack>
+                
+                <VStack space="xs" className="items-center flex-1">
+                  <Button 
+                    size="md"
+                    variant="solid"
+                    className="rounded-full h-[60px] w-[60px] bg-emerald-500"
+                    onPress={() => router.push('/confirm-order')}
+                  >
+                    <CheckCircle2 size={24} color="white" />
+                  </Button>
+                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Confirmed Orders</Text>
+                </VStack>
+                
+                <VStack space="xs" className="items-center flex-1">
+                  <Button 
+                    size="md"
+                    variant="solid"
+                    className="rounded-full h-[60px] w-[60px] bg-orange-500"
+                    onPress={() => router.push('/cancel-order')}
+                  >
+                    <XCircle size={24} color="white" />
+                  </Button>
+                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Cancelled Orders</Text>
+                </VStack>
+              </HStack>
+            </Box>
+          </VStack>
+
           {/* Charts Section */}
           <VStack space="lg" className="mb-8">
             <Heading size="sm" className="text-gray-800 mb-2">Analytics</Heading>
@@ -458,51 +503,6 @@ const Home = () => {
                 />
               </Box>
             </ChartCard>
-          </VStack>
-
-          {/* Order Management */}
-          <VStack space="lg" className="mb-8">
-            <Heading size="sm" className="text-gray-800 mb-2">Order Management</Heading>
-            
-            <Box className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-              <HStack space="md" className="w-full justify-center">
-                <VStack space="xs" className="items-center flex-1">
-                  <Button 
-                    size="md"
-                    variant="solid"
-                    className="rounded-full h-[60px] w-[60px] bg-gray-800"
-                    onPress={() => router.push('/new-order')}
-                  >
-                    <Clock size={24} color="white" />
-                  </Button>
-                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Pending Orders</Text>
-                </VStack>
-                
-                <VStack space="xs" className="items-center flex-1">
-                  <Button 
-                    size="md"
-                    variant="solid"
-                    className="rounded-full h-[60px] w-[60px] bg-emerald-500"
-                    onPress={() => router.push('/confirm-order')}
-                  >
-                    <CheckCircle2 size={24} color="white" />
-                  </Button>
-                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Confirmed Orders</Text>
-                </VStack>
-                
-                <VStack space="xs" className="items-center flex-1">
-                  <Button 
-                    size="md"
-                    variant="solid"
-                    className="rounded-full h-[60px] w-[60px] bg-orange-500"
-                    onPress={() => router.push('/cancel-order')}
-                  >
-                    <XCircle size={24} color="white" />
-                  </Button>
-                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Cancelled Orders</Text>
-                </VStack>
-              </HStack>
-            </Box>
           </VStack>
         </Box>
       </ScrollView>

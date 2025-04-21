@@ -17,8 +17,6 @@ import { EyeIcon, EyeOffIcon, LogInIcon, UserIcon, LockIcon } from 'lucide-react
 import { Alert, AlertText, AlertIcon } from '@/components/ui/alert';
 import { InfoIcon } from '@/components/ui/icon';
 import { useAuth } from '@/context/AuthContext';
-import { Checkbox } from '@/components/ui/checkbox';
-import { CheckIcon } from '@/components/ui/icon';
 import { Image } from '@/components/ui/image';
 
 const SignIn = () => {
@@ -27,7 +25,6 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [rememberMe, setRememberMe] = useState(true);
   const { login } = useAuth();
 
   // Load saved credentials when component mounts
@@ -36,11 +33,9 @@ const SignIn = () => {
       try {
         const savedUsername = await AsyncStorage.getItem('savedUsername');
         const savedPassword = await AsyncStorage.getItem('savedPassword');
-        const savedRememberMe = await AsyncStorage.getItem('rememberMe');
         
         if (savedUsername) setUsername(savedUsername);
         if (savedPassword) setPassword(savedPassword);
-        if (savedRememberMe !== null) setRememberMe(savedRememberMe === 'true');
       } catch (error) {
         console.error('Error loading saved credentials:', error);
       }
@@ -63,17 +58,10 @@ const SignIn = () => {
       
       await login(username, password);
       
-      // Save credentials if remember me is checked
-      if (rememberMe) {
-        await AsyncStorage.setItem('savedUsername', username);
-        await AsyncStorage.setItem('savedPassword', password);
-        await AsyncStorage.setItem('rememberMe', 'true');
-      } else {
-        // Clear saved credentials if remember me is unchecked
-        await AsyncStorage.removeItem('savedUsername');
-        await AsyncStorage.removeItem('savedPassword');
-        await AsyncStorage.setItem('rememberMe', 'false');
-      }
+      // Always save credentials on successful login
+      await AsyncStorage.setItem('savedUsername', username);
+      await AsyncStorage.setItem('savedPassword', password);
+      
     } catch (err) {
       console.error('Login error details:', err);
       
@@ -170,23 +158,6 @@ const SignIn = () => {
                 </InputSlot>
               </Input>
             </FormControl>
-
-            {/* Remember Me checkbox with improved styling */}
-            <Box className="mb-6">
-              <HStack space="sm" alignItems="center">
-                <Checkbox
-                  value="rememberMe"
-                  isChecked={rememberMe}
-                  onChange={setRememberMe}
-                  aria-label="Remember me"
-                  accessibilityLabel="Remember me"
-                  className="border-primary-400 bg-primary-50"
-                >
-                  <CheckIcon color="$primary500" />
-                </Checkbox>
-                <Text size="sm" className="text-gray-600 ml-2 font-medium">Remember Me</Text>
-              </HStack>
-            </Box>
 
             <Button
               size="lg"
