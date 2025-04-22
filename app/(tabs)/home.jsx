@@ -380,7 +380,7 @@ const Home = () => {
                   <Button 
                     size="md"
                     variant="solid"
-                    className="rounded-full h-[60px] w-[60px] bg-gray-800"
+                    className="rounded-full h-[50px] w-[50px] bg-gray-800"
                     onPress={() => router.push('/new-order')}
                   >
                     <Clock size={24} color="white" />
@@ -392,7 +392,7 @@ const Home = () => {
                   <Button 
                     size="md"
                     variant="solid"
-                    className="rounded-full h-[60px] w-[60px] bg-emerald-500"
+                    className="rounded-full h-[50px] w-[50px] bg-emerald-500"
                     onPress={() => router.push('/confirm-order')}
                   >
                     <CheckCircle2 size={24} color="white" />
@@ -404,7 +404,7 @@ const Home = () => {
                   <Button 
                     size="md"
                     variant="solid"
-                    className="rounded-full h-[60px] w-[60px] bg-orange-500"
+                    className="rounded-full h-[50px] w-[50px] bg-orange-500"
                     onPress={() => router.push('/cancel-order')}
                   >
                     <XCircle size={24} color="white" />

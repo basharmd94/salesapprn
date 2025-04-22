@@ -33,9 +33,14 @@ const ItemCard = memo(({ item, onSelect }) => (
           <Text className="text-lg font-semibold text-gray-900" numberOfLines={1} ellipsizeMode="tail">
             {item.item_name}
           </Text>
-          <Text className="text-sm text-gray-600 mt-1">
-            ID: {item.item_id}
-          </Text>
+          <View className="flex-row justify-between items-center mt-1">
+            <Text className="text-sm text-gray-600">
+              ID: {item.item_id}
+            </Text>
+            <Text className="text-sm text-green-600 font-medium">
+              Discount: {item.min_disc_qty || 'N/A'} / ৳{item.disc_amt || 'N/A'}
+            </Text>
+          </View>
         </View>
       </View>
 
