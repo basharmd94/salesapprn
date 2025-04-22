@@ -8,7 +8,7 @@ import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
 import { useAuth } from "@/context/AuthContext";
 import { Heading } from "@/components/ui/heading";
-import { LogOut, Package, Clock, RefreshCw, DollarSign, Plus, List, ChevronRight, CheckCircle2, XCircle } from 'lucide-react-native';
+import { LogOut, Package, Clock, RefreshCw, DollarSign, Plus, List, ChevronRight, CheckCircle2, XCircle, MessageSquare, BarChart2 } from 'lucide-react-native';
 import { Avatar } from "@/components/ui/avatar";
 import { AvatarFallbackText } from "@/components/ui/avatar";
 import { router } from "expo-router";
@@ -380,19 +380,19 @@ const Home = () => {
                   <Button 
                     size="md"
                     variant="solid"
-                    className="rounded-full h-[50px] w-[50px] bg-gray-800"
+                    className="rounded-full h-[60px] w-[60px] bg-gray-800"
                     onPress={() => router.push('/new-order')}
                   >
                     <Clock size={24} color="white" />
                   </Button>
-                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Orders Sent</Text>
+                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Pending Orders</Text>
                 </VStack>
                 
                 <VStack space="xs" className="items-center flex-1">
                   <Button 
                     size="md"
                     variant="solid"
-                    className="rounded-full h-[50px] w-[50px] bg-emerald-500"
+                    className="rounded-full h-[60px] w-[60px] bg-emerald-500"
                     onPress={() => router.push('/confirm-order')}
                   >
                     <CheckCircle2 size={24} color="white" />
@@ -404,12 +404,57 @@ const Home = () => {
                   <Button 
                     size="md"
                     variant="solid"
-                    className="rounded-full h-[50px] w-[50px] bg-orange-500"
+                    className="rounded-full h-[60px] w-[60px] bg-orange-500"
                     onPress={() => router.push('/cancel-order')}
                   >
                     <XCircle size={24} color="white" />
                   </Button>
                   <Text className="text-xs font-medium text-gray-800 text-center mt-2">Cancelled Orders</Text>
+                </VStack>
+              </HStack>
+            </Box>
+          </VStack>
+          
+          {/* Customer Management */}
+          <VStack space="lg" className="mb-8">
+            <Heading size="sm" className="text-gray-800 mb-2">Customer Management</Heading>
+            
+            <Box className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+              <HStack space="md" className="w-full justify-center">
+                <VStack space="xs" className="items-center flex-1">
+                  <Button 
+                    size="md"
+                    variant="solid"
+                    className="rounded-full h-[60px] w-[60px] bg-blue-600"
+                    onPress={() => router.push('/customer-balance')}
+                  >
+                    <DollarSign size={24} color="white" />
+                  </Button>
+                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Balance</Text>
+                </VStack>
+                
+                <VStack space="xs" className="items-center flex-1">
+                  <Button 
+                    size="md"
+                    variant="solid"
+                    className="rounded-full h-[60px] w-[60px] bg-purple-600"
+                    onPress={() => router.push('/customer-feedback')}
+                  >
+                    <MessageSquare size={24} color="white" />
+                  </Button>
+                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Feedback</Text>
+                </VStack>
+                
+                <VStack space="xs" className="items-center flex-1">
+                  <Button 
+                    size="md"
+                    variant="solid"
+                    className="rounded-full h-[60px] w-[60px] bg-indigo-600"
+                    onPress={() => router.push('/customer-analysis')}
+                  >
+                    <BarChart2 size={24} color="white" />
+                  </Button>
+                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Analysis</Text>
                 </VStack>
               </HStack>
             </Box>

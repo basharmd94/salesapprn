@@ -35,6 +35,38 @@ export default function ScreensLayout() {
           animation: "slide_from_right"
         }} 
       />
+      <Stack.Screen 
+        name="customer-balance" 
+        options={{ 
+          title: "Customer Balance",
+          headerBackTitleVisible: false,
+          animation: "slide_from_right"
+        }} 
+      />
+      <Stack.Screen 
+        name="customer-feedback" 
+        options={{ 
+          title: "Customer Feedback",
+          headerBackTitleVisible: false,
+          animation: "slide_from_right"
+        }} 
+      />
+      <Stack.Screen 
+        name="customer-analysis" 
+        options={{ 
+          title: "Customer Analysis",
+          headerBackTitleVisible: false,
+          animation: "slide_from_right"
+        }} 
+      />
+      <Stack.Screen 
+        name="customer-balance-details" 
+        options={{ 
+          title: "Balance Details",
+          headerBackTitleVisible: false,
+          animation: "slide_from_right"
+        }} 
+      />
     </Stack>
   );
 }
