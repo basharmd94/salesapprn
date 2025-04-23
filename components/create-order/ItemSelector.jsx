@@ -1,8 +1,9 @@
 import React, { useState, useCallback, useEffect, useRef, memo } from 'react';
-import { View, FlatList, TouchableOpacity, Keyboard } from 'react-native';
+import { View, FlatList, TouchableOpacity, Keyboard, ActivityIndicator } from 'react-native';
 import { Input, InputField, InputIcon, InputSlot } from '@/components/ui/input';
 import { ChevronDown, Search, X, ShoppingCart, CreditCard, ShoppingBasket } from 'lucide-react-native';
 import { Spinner } from '@/components/ui/spinner';
+import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing } from 'react-native-reanimated';
 import {
   Drawer,
   DrawerBackdrop,
@@ -75,7 +76,8 @@ export default function ItemSelector({
   loading,
   searchText,
   setSearchText,
-  onSearch
+  onSearch,
+  loadingMore = false // Add a new prop for indicating when more items are being loaded
 }) {
   const drawerInputRef = useRef(null);
   const [localSearchText, setLocalSearchText] = useState('');
@@ -147,6 +149,20 @@ export default function ItemSelector({
   const getItemKey = useCallback((item) => 
     `item-${item.item_id}-${zid}`, 
   [zid]);
+
+  // Create a loading footer component
+  const renderFooter = useCallback(() => {
+    if (!loadingMore) return null;
+    
+    return (
+      <View className="py-4 items-center justify-center">
+        <ActivityIndicator size="small" color="#0284c7" />
+        <Text className="text-gray-600 text-center mt-2">
+          Loading more items...
+        </Text>
+      </View>
+    );
+  }, [loadingMore]);
 
   return (
     <VStack space="md">
@@ -225,15 +241,23 @@ export default function ItemSelector({
               keyExtractor={getItemKey}
               ListEmptyComponent={
                 <View className="py-5 items-center">
-                  <Text className="text-gray-600 text-center">
-                    {localSearchText.length < 1
-                      ? "Type at least 1 character to search"
-                      : loading
-                      ? "Searching..."
-                      : "No items found"}
-                  </Text>
+                  {loading ? (
+                    <View className="items-center">
+                      <ActivityIndicator size="large" color="#0284c7" />
+                      <Text className="text-gray-600 text-center mt-3">
+                        Searching for items...
+                      </Text>
+                    </View>
+                  ) : (
+                    <Text className="text-gray-600 text-center">
+                      {localSearchText.length < 1
+                        ? "Type at least 1 character to search"
+                        : "No items found"}
+                    </Text>
+                  )}
                 </View>
               }
+              ListFooterComponent={renderFooter}
               removeClippedSubviews={true}
               initialNumToRender={10}
               maxToRenderPerBatch={10}
@@ -247,6 +271,8 @@ export default function ItemSelector({
                 paddingTop: 8,
                 paddingBottom: 20 
               }}
+              onEndReached={items.length > 0 ? onSearch : null} // Trigger search for more items when reaching the end
+              onEndReachedThreshold={0.3} // Start loading more when user is 30% from the end
             />
           </View>
         </DrawerContent>

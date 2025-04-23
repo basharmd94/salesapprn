@@ -1,6 +1,6 @@
 import { router, Tabs } from 'expo-router';
 import { Platform } from 'react-native';
-import { House, Package, User, ShoppingBag, CirclePlus, Send, ChevronLeft } from 'lucide-react-native';
+import { House, Package, User, ShoppingBag, CirclePlus, Send, ChevronLeft, Boxes } from 'lucide-react-native';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { Pressable } from '@/components/ui/pressable';
@@ -23,6 +23,7 @@ export default function TabLayout() {
   const renderHomeTabIcon = useCallback((props) => <TabBarIcon {...props} icon={House} />, []);
   const renderCreateTabIcon = useCallback((props) => <TabBarIcon {...props} icon={CirclePlus} />, []);
   const renderSendTabIcon = useCallback((props) => <TabBarIcon {...props} icon={Send} />, []);
+  const renderItemsTabIcon = useCallback((props) => <TabBarIcon {...props} icon={Boxes} />, []);
   const renderProfileTabIcon = useCallback((props) => <TabBarIcon {...props} icon={User} />, []);
   
   return (
@@ -106,6 +107,19 @@ export default function TabLayout() {
             </Box>
           ),
           tabBarIcon: renderSendTabIcon,
+        }}
+      />
+      <Tabs.Screen
+        name="item-management"
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault();
+            router.push("/item-management");
+          },
+        }}
+        options={{
+          title: 'Items',
+          tabBarIcon: renderItemsTabIcon,
         }}
       />
       <Tabs.Screen

@@ -36,6 +36,13 @@ export default function ScreensLayout() {
         }} 
       />
       <Stack.Screen 
+        name="fetch_items"
+        options={{
+          headerShown: false,
+          animation: "slide_from_right"
+        }}
+      />
+      <Stack.Screen 
         name="customer-balance" 
         options={{ 
           title: "Customer Balance",

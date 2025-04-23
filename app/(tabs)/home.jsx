@@ -1,5 +1,5 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView, RefreshControl, Dimensions, Platform } from "react-native";
+import { ScrollView, RefreshControl, Dimensions, Platform, Animated } from "react-native";
 import { Box } from "@/components/ui/box";
 import { Button } from "@/components/ui/button";
 import { ButtonText, ButtonIcon } from "@/components/ui/button";
@@ -8,11 +8,11 @@ import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
 import { useAuth } from "@/context/AuthContext";
 import { Heading } from "@/components/ui/heading";
-import { LogOut, Package, Clock, RefreshCw, DollarSign, Plus, List, ChevronRight, CheckCircle2, XCircle, MessageSquare, BarChart2 } from 'lucide-react-native';
+import { LogOut, Package, Clock, RefreshCw, DollarSign, Plus, List, ChevronRight, CheckCircle2, XCircle, MessageSquare, BarChart2, Users, ShoppingCart, Truck, Settings, Search } from 'lucide-react-native';
 import { Avatar } from "@/components/ui/avatar";
 import { AvatarFallbackText } from "@/components/ui/avatar";
 import { router } from "expo-router";
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { getOrderStats, getYearlyStats } from '@/lib/api_items';
 import {
   LineChart,
@@ -27,6 +27,57 @@ import ChartCard from '@/components/dashboard/ChartCard';
 import QuickActionCard from '@/components/dashboard/QuickActionCard';
 
 const screenWidth = Dimensions.get("window").width;
+
+// Custom Card Component for Management Sections
+const ManagementCard = ({ title, icon: Icon, color, onPress, subtitle }) => {
+  const scale = useRef(new Animated.Value(1)).current;
+  
+  const onPressIn = () => {
+    Animated.spring(scale, {
+      toValue: 0.95,
+      friction: 8,
+      tension: 100,
+      useNativeDriver: true,
+    }).start();
+  };
+  
+  const onPressOut = () => {
+    Animated.spring(scale, {
+      toValue: 1,
+      friction: 8,
+      tension: 40,
+      useNativeDriver: true,
+    }).start();
+  };
+  
+  return (
+    <Animated.View 
+      style={{ 
+        transform: [{ scale }],
+        flex: 1,
+      }}
+    >
+      <Button
+        variant="solid"
+        className={`${color} h-[90px] rounded-2xl shadow-sm`}
+        onPress={onPress}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        style={{
+          elevation: Platform.OS === 'android' ? 2 : 0,
+        }}
+      >
+        <VStack className="items-center space-y-1">
+          <Icon size={26} color="white" />
+          <Text className="text-white font-semibold text-sm">{title}</Text>
+          {subtitle && (
+            <Text className="text-white/80 text-xs">{subtitle}</Text>
+          )}
+        </VStack>
+      </Button>
+    </Animated.View>
+  );
+};
 
 const Home = () => { 
   const { user, logout, loading } = useAuth();
@@ -261,12 +312,16 @@ const Home = () => {
         }
         showsVerticalScrollIndicator={false}
       >
-        <Box className="px-4 py-4">
+        <Box className="px-4 pt-4 pb-6">
           {/* Enhanced Header Section */}
           <Box 
-            className="bg-gray-800 rounded-3xl p-6 mb-6"
+            className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-3xl p-6 mb-6"
             style={{
               elevation: Platform.OS === 'android' ? 5 : 0,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.1,
+              shadowRadius: 12,
             }}
           >
             <VStack space="md">
@@ -279,12 +334,12 @@ const Home = () => {
                     {user?.employee_name || user?.username || 'User'}
                   </Heading>
                   <HStack space="sm" className="items-center mt-1">
-                    <Box className="bg-white/30 px-3 py-1 rounded-full">
+                    <Box className="bg-white/20 px-3 py-1 rounded-full">
                       <Text className="text-white text-xs">
                         Terminal: {user?.terminal || 'N/A'}
                       </Text>
                     </Box>
-                    <Box className="bg-white/30 px-3 py-1 rounded-full">
+                    <Box className="bg-white/20 px-3 py-1 rounded-full">
                       <Text className="text-white text-xs">
                         ID: {user?.user_id || 'N/A'}
                       </Text>
@@ -294,7 +349,7 @@ const Home = () => {
                 <HStack space="sm">
                   <Avatar 
                     size="lg" 
-                    className="border-2 border-white bg-white/30"
+                    className="border-2 border-white bg-white/20"
                   >
                     <AvatarFallbackText className="text-white">
                       {getInitials(user?.employee_name || 'User')}
@@ -304,15 +359,15 @@ const Home = () => {
                     variant="solid"
                     size="sm"
                     onPress={logout}
-                    className="bg-white/30 self-start mt-1"
+                    className="bg-white/20 self-start mt-1"
                   >
                     <ButtonIcon as={LogOut} size={18} className="text-white" />
                   </Button>
                 </HStack>
               </HStack>
 
-              {/* User info card with gray-800 matching the Total Orders card */}
-              <Box className="mt-4 bg-orange-500 p-4 rounded-2xl">
+              {/* User info card with better color scheme */}
+              <Box className="mt-4 bg-gradient-to-r from-orange-500 to-orange-600 p-4 rounded-2xl">
                 <HStack className="justify-between items-center">
                   <Box className="items-start">
                     <Text className="text-white/80 text-xs">Business ID</Text>
@@ -351,7 +406,7 @@ const Home = () => {
                 className="border-primary-100 bg-primary-50"
               >
                 <HStack space="xs" className="items-center px-1">
-                  <RefreshCw size={14} color = 'black' />
+                  <RefreshCw size={14} color="#ff8c00" />
                   <ButtonText className="text-primary-500 text-sm">Refresh</ButtonText>
                 </HStack>
               </Button>
@@ -370,100 +425,224 @@ const Home = () => {
             </ScrollView>
           </VStack>
 
+          {/* Quick Actions */}
+          <VStack space="lg" className="mb-8">
+            <HStack className="justify-between items-center mb-2">
+              <Heading size="sm" className="text-gray-800">Quick Actions</Heading>
+              <Button
+                variant="link"
+                size="sm"
+                onPress={() => {}}
+                className="p-0"
+              >
+                <HStack space="xs" className="items-center">
+                  <ButtonText className="text-primary-500 text-sm">View All</ButtonText>
+                  <ChevronRight size={16} color="#ff8c00" />
+                </HStack>
+              </Button>
+            </HStack>
+            
+            <HStack space="md">
+              <Button 
+                variant="solid"
+                className="flex-1 h-[80px] bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-sm"
+                onPress={() => router.push('/create-order')}
+                style={{
+                  elevation: Platform.OS === 'android' ? 2 : 0,
+                  shadowColor: '#3b82f6',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 8,
+                }}
+              >
+                <HStack space="md" className="items-center">
+                  <Box className="bg-white/20 p-2 rounded-full">
+                    <Plus size={20} color="white" />
+                  </Box>
+                  <VStack className="items-start">
+                    <Text className="text-white font-bold">New Order</Text>
+                    <Text className="text-white/80 text-xs">Create order</Text>
+                  </VStack>
+                </HStack>
+              </Button>
+              
+              <Button 
+                variant="solid"
+                className="flex-1 h-[80px] bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-sm"
+                onPress={() => router.push('/send-orders')}
+                style={{
+                  elevation: Platform.OS === 'android' ? 2 : 0,
+                  shadowColor: '#8b5cf6',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 8,
+                }}
+              >
+                <HStack space="md" className="items-center">
+                  <Box className="bg-white/20 p-2 rounded-full">
+                    <List size={20} color="white" />
+                  </Box>
+                  <VStack className="items-start">
+                    <Text className="text-white font-bold">Orders</Text>
+                    <Text className="text-white/80 text-xs">View history</Text>
+                  </VStack>
+                </HStack>
+              </Button>
+            </HStack>
+          </VStack>
+
           {/* Order Management */}
           <VStack space="lg" className="mb-8">
-            <Heading size="sm" className="text-gray-800 mb-2">Order Management</Heading>
+            <HStack className="justify-between items-center mb-4">
+              <VStack>
+                <Heading size="sm" className="text-gray-800">Order Management</Heading>
+                <Text className="text-gray-500 text-xs">Monitor and manage all orders</Text>
+              </VStack>
+            </HStack>
             
-            <Box className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-              <HStack space="md" className="w-full justify-center">
-                <VStack space="xs" className="items-center flex-1">
-                  <Button 
-                    size="md"
-                    variant="solid"
-                    className="rounded-full h-[60px] w-[60px] bg-gray-800"
-                    onPress={() => router.push('/new-order')}
-                  >
-                    <Clock size={24} color="white" />
-                  </Button>
-                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Pending Orders</Text>
-                </VStack>
+            <VStack space="md">
+              <HStack space="md">
+                <ManagementCard 
+                  title="Pending" 
+                  subtitle="Orders"
+                  icon={Clock}
+                  color="bg-gradient-to-br from-gray-700 to-gray-800"
+                  onPress={() => router.push('/new-order')}
+                />
                 
-                <VStack space="xs" className="items-center flex-1">
-                  <Button 
-                    size="md"
-                    variant="solid"
-                    className="rounded-full h-[60px] w-[60px] bg-emerald-500"
-                    onPress={() => router.push('/confirm-order')}
-                  >
-                    <CheckCircle2 size={24} color="white" />
-                  </Button>
-                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Confirmed Orders</Text>
-                </VStack>
-                
-                <VStack space="xs" className="items-center flex-1">
-                  <Button 
-                    size="md"
-                    variant="solid"
-                    className="rounded-full h-[60px] w-[60px] bg-orange-500"
-                    onPress={() => router.push('/cancel-order')}
-                  >
-                    <XCircle size={24} color="white" />
-                  </Button>
-                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Cancelled Orders</Text>
-                </VStack>
+                <ManagementCard 
+                  title="Confirmed" 
+                  subtitle="Orders"
+                  icon={CheckCircle2}
+                  color="bg-gradient-to-br from-emerald-500 to-emerald-600"
+                  onPress={() => router.push('/confirm-order')}
+                />
               </HStack>
-            </Box>
+              
+              <HStack space="md">
+                <ManagementCard 
+                  title="Cancelled" 
+                  subtitle="Orders"
+                  icon={XCircle}
+                  color="bg-gradient-to-br from-orange-500 to-orange-600"
+                  onPress={() => router.push('/cancel-order')}
+                />
+                
+                <ManagementCard 
+                  title="Delivery" 
+                  subtitle="Tracking"
+                  icon={Truck}
+                  color="bg-gradient-to-br from-indigo-500 to-indigo-600"
+                  onPress={() => router.push('/location')}
+                />
+              </HStack>
+            </VStack>
           </VStack>
           
           {/* Customer Management */}
           <VStack space="lg" className="mb-8">
-            <Heading size="sm" className="text-gray-800 mb-2">Customer Management</Heading>
+            <HStack className="justify-between items-center mb-4">
+              <VStack>
+                <Heading size="sm" className="text-gray-800">Customer Management</Heading>
+                <Text className="text-gray-500 text-xs">Manage customer information and data</Text>
+              </VStack>
+            </HStack>
             
-            <Box className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-              <HStack space="md" className="w-full justify-center">
-                <VStack space="xs" className="items-center flex-1">
-                  <Button 
-                    size="md"
-                    variant="solid"
-                    className="rounded-full h-[60px] w-[60px] bg-blue-600"
-                    // onPress={() => router.push('/customer-balance')}
-                    onPress={null}
-                  >
-                    <DollarSign size={24} color="white" />
-                  </Button>
-                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Balance</Text>
-                </VStack>
+            <VStack space="md">
+              <HStack space="md">
+                <ManagementCard 
+                  title="Balance" 
+                  subtitle="Check & Adjust"
+                  icon={DollarSign}
+                  color="bg-gradient-to-br from-blue-500 to-blue-600"
+                  onPress={() => router.push('/customer-balance')}
+                />
                 
-                <VStack space="xs" className="items-center flex-1">
-                  <Button 
-                    size="md"
-                    variant="solid"
-                    className="rounded-full h-[60px] w-[60px] bg-purple-600"
-                    onPress={() => router.push('/customer-feedback')}
-                  >
-                    <MessageSquare size={24} color="white" />
-                  </Button>
-                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Feedback</Text>
-                </VStack>
-                
-                <VStack space="xs" className="items-center flex-1">
-                  <Button 
-                    size="md"
-                    variant="solid"
-                    className="rounded-full h-[60px] w-[60px] bg-indigo-600"
-                    onPress={() => router.push('/customer-analysis')}
-                  >
-                    <BarChart2 size={24} color="white" />
-                  </Button>
-                  <Text className="text-xs font-medium text-gray-800 text-center mt-2">Analysis</Text>
-                </VStack>
+                <ManagementCard 
+                  title="Feedback" 
+                  subtitle="Reviews & Ratings"
+                  icon={MessageSquare}
+                  color="bg-gradient-to-br from-purple-500 to-purple-600"
+                  onPress={() => router.push('/customer-feedback')}
+                />
               </HStack>
-            </Box>
+              
+              <HStack space="md">
+                <ManagementCard 
+                  title="Analysis" 
+                  subtitle="Behavior & Trends"
+                  icon={BarChart2}
+                  color="bg-gradient-to-br from-pink-500 to-pink-600"
+                  onPress={() => router.push('/customer-analysis')}
+                />
+                
+                <ManagementCard 
+                  title="Profiles" 
+                  subtitle="Account Details"
+                  icon={Users}
+                  color="bg-gradient-to-br from-cyan-500 to-cyan-600"
+                  onPress={() => {}}
+                />
+              </HStack>
+            </VStack>
+          </VStack>
+          
+          {/* Product Management */}
+          <VStack space="lg" className="mb-8">
+            <HStack className="justify-between items-center mb-4">
+              <VStack>
+                <Heading size="sm" className="text-gray-800">Product Management</Heading>
+                <Text className="text-gray-500 text-xs">Manage your products and inventory</Text>
+              </VStack>
+            </HStack>
+            
+            <VStack space="md">
+              <HStack space="md">
+                <ManagementCard 
+                  title="Inventory" 
+                  subtitle="Stock Management"
+                  icon={Package}
+                  color="bg-gradient-to-br from-green-500 to-green-600"
+                  onPress={() => router.push('/item-management')}
+                />
+                
+                <ManagementCard 
+                  title="Catalog" 
+                  subtitle="Product Listings"
+                  icon={ShoppingCart}
+                  color="bg-gradient-to-br from-amber-500 to-amber-600"
+                  onPress={() => router.push('/fetch_items')}
+                />
+              </HStack>
+              
+              <HStack space="md">
+                <ManagementCard 
+                  title="Search" 
+                  subtitle="Find Products"
+                  icon={Search}
+                  color="bg-gradient-to-br from-rose-500 to-rose-600"
+                  onPress={() => {}}
+                />
+                
+                <ManagementCard 
+                  title="Settings" 
+                  subtitle="Product Preferences"
+                  icon={Settings}
+                  color="bg-gradient-to-br from-slate-500 to-slate-600"
+                  onPress={() => {}}
+                />
+              </HStack>
+            </VStack>
           </VStack>
 
           {/* Charts Section */}
           <VStack space="lg" className="mb-8">
-            <Heading size="sm" className="text-gray-800 mb-2">Analytics</Heading>
+            <HStack className="justify-between items-center mb-4">
+              <VStack>
+                <Heading size="sm" className="text-gray-800">Analytics</Heading>
+                <Text className="text-gray-500 text-xs">Business performance metrics</Text>
+              </VStack>
+            </HStack>
             
             {/* Monthly Orders Chart */}
             <ChartCard 
