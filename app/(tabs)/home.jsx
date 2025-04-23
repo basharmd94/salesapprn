@@ -426,7 +426,8 @@ const Home = () => {
                     size="md"
                     variant="solid"
                     className="rounded-full h-[60px] w-[60px] bg-blue-600"
-                    onPress={() => router.push('/customer-balance')}
+                    // onPress={() => router.push('/customer-balance')}
+                    onPress={null}
                   >
                     <DollarSign size={24} color="white" />
                   </Button>
