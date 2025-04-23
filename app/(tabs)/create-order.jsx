@@ -155,26 +155,14 @@ export default function CreateOrder() {
         xprice: parseFloat(itemPrice),
         xroword: cartItems.length + 1,
         xdate: new Date().toISOString().split('T')[0],
-        xsl: Math.random().toString(36).substring(7),
+        xsl: Math.random().toString(36).substring(7), // Unique identifier for each cart item
         xlat: null,
         xlong: null,
         xlinetotal: lineTotal
     };
 
-    let updatedItems;
-    const existingItemIndex = cartItems.findIndex(i => i.xitem === item);
-
-    if (existingItemIndex >= 0) {
-        updatedItems = cartItems.map((item, index) =>
-            index === existingItemIndex ? 
-                { ...item, 
-                  xqty: parsedQuantity, 
-                  xlinetotal: lineTotal 
-                } : item
-        );
-    } else {
-        updatedItems = [...cartItems, newItem];
-    }
+    // Always add as a new item instead of updating existing one
+    const updatedItems = [...cartItems, newItem];
 
     setCartItems(updatedItems);
 
