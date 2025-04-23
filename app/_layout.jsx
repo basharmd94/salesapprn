@@ -27,8 +27,6 @@ function ProtectedRoute() {
 }
 
 export default function RootLayout() {
-
-
   useEffect(() => {
     // Hide splash screen once everything is set
     SplashScreen.hideAsync();
@@ -37,8 +35,18 @@ export default function RootLayout() {
   return (
     <GluestackUIProvider config={config}>
       <AuthProvider>
-
-          <Stack>
+          <Stack
+            screenOptions={{
+              // Safe default animation settings to prevent the sceneStyleInterpolator error
+              animation: 'fade',
+              headerShown: false,
+              // Disable custom interpolators that could cause issues
+              animationEnabled: true,
+              presentation: 'card',
+              // Adding reasonable animation duration
+              animationDuration: 250,
+            }}
+          >
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="(screens)" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
