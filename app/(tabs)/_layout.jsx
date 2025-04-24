@@ -1,9 +1,11 @@
 import { router, Tabs } from 'expo-router';
-import { Platform, ActivityIndicator, Animated, View } from 'react-native';
+import { Platform, Animated, View } from 'react-native';
 import { House, Package, User, ShoppingBag, CirclePlus, Send, ChevronLeft, Boxes } from 'lucide-react-native';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { Pressable } from '@/components/ui/pressable';
+import { Spinner } from '@/components/ui/spinner';
+import { Center } from '@/components/ui/center';
 import { useCallback, useState, useRef, useEffect } from 'react';
 
 // Custom TabNavigationIndicator Component
@@ -57,7 +59,9 @@ const TabNavigationIndicator = () => {
         opacity,
       }}
     >
-      <ActivityIndicator size="large" color="#FFA001" />
+      <Center>
+        <Spinner size="large" color="$primary" />
+      </Center>
     </Animated.View>
   );
 };

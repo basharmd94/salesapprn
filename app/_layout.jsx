@@ -18,8 +18,14 @@ function ProtectedRoute() {
   const { user, loading } = useAuth();
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.replace('/sign-in');
+    if (!loading) {
+      // Only redirect if not loading and no user
+      if (!user) {
+        // Using replace to prevent navigation history
+        router.replace('/sign-in');
+      } 
+      // No need to redirect to home if on index or auth pages
+      // This is handled by the respective pages
     }
   }, [user, loading]);
 
@@ -50,7 +56,14 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="(screens)" options={{ headerShown: false }} />
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen 
+              name="index" 
+              options={{ 
+                headerShown: false,
+                // Prevent this screen from appearing in history
+                gestureEnabled: false 
+              }} 
+            />
             <Stack.Screen name="+not-found" />
           </Stack>
           <ProtectedRoute />

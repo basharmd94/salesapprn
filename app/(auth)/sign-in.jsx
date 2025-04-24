@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
 import { Box } from '@/components/ui/box';
 import { Button } from '@/components/ui/button';
 import { ButtonText, ButtonIcon, ButtonSpinner } from '@/components/ui/button';
@@ -25,7 +26,14 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const { login } = useAuth();
+  const { login, user } = useAuth();
+
+  // Check if user is already logged in
+  useEffect(() => {
+    if (user) {
+      router.replace('/(tabs)/home');
+    }
+  }, [user]);
 
   // Load saved credentials when component mounts
   useEffect(() => {
@@ -61,6 +69,9 @@ const SignIn = () => {
       // Always save credentials on successful login
       await AsyncStorage.setItem('savedUsername', username);
       await AsyncStorage.setItem('savedPassword', password);
+      
+      // Explicitly navigate to home on successful login
+      router.replace('/(tabs)/home');
       
     } catch (err) {
       console.error('Login error details:', err);
