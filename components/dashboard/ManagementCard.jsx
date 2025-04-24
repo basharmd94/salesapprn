@@ -6,8 +6,7 @@ import { Text } from '@/components/ui/text';
 import { LinearGradient } from 'expo-linear-gradient';
 
 /**
- * Quick Action Card Component
- * Similar to ManagementCard but can have different styling for quick actions
+ * Management Card Component for consistent styling of action cards
  * 
  * @param {Object} props
  * @param {string} props.title - The title of the card
@@ -17,13 +16,13 @@ import { LinearGradient } from 'expo-linear-gradient';
  * @param {number} props.animationDelay - Delay for the animation in ms
  * @param {string[]} props.gradientColors - Array of gradient colors
  */
-const QuickActionCard = ({ 
+const ManagementCard = ({ 
   title, 
   icon: Icon, 
-  subtitle, 
   onPress, 
+  subtitle, 
   animationDelay = 0, 
-  gradientColors = ['#4c669f', '#3b5998', '#192f6a'] 
+  gradientColors = ['#4c669f', '#3b5998', '#192f6a']
 }) => {
   const scale = useRef(new Animated.Value(1)).current;
   const opacity = useRef(new Animated.Value(0)).current;
@@ -81,7 +80,7 @@ const QuickActionCard = ({
           colors={gradientColors}
           start={[0, 0]}
           end={[1, 1]}
-          className="w-full h-full justify-center items-center rounded-2xl p-4"
+          className="w-full h-full justify-center items-center rounded-2xl"
         >
           <VStack className="items-center space-y-1">
             <Icon size={26} color="white" />
@@ -96,4 +95,4 @@ const QuickActionCard = ({
   );
 };
 
-export default QuickActionCard;
+export default ManagementCard;

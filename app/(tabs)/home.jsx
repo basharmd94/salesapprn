@@ -6,19 +6,27 @@ import { ButtonText, ButtonIcon } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
+import { Fab, FabIcon } from "@/components/ui/fab";
 import { useAuth } from "@/context/AuthContext";
 import { Heading } from "@/components/ui/heading";
-import { LogOut, Package, Clock, RefreshCw, DollarSign, Plus, List, ChevronRight, CheckCircle2, XCircle, MessageSquare, BarChart2, Users, ShoppingCart, Truck, Settings, Search } from 'lucide-react-native';
+import { 
+  LogOut, Package, Clock, RefreshCw, DollarSign, Plus, List, ChevronRight, 
+  CheckCircle2, XCircle, MessageSquare, Menu, House, ShoppingCart, Truck, User
+} from 'lucide-react-native';
 import { Avatar } from "@/components/ui/avatar";
 import { AvatarFallbackText } from "@/components/ui/avatar";
 import { router, usePathname } from "expo-router";
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { getOrderStats, getYearlyStats } from '@/lib/api_items';
 import { LinearGradient } from 'expo-linear-gradient';
 
 // Import separated components
-import LoadingState from '@/components/dashboard/LoadingState';
-import StatsCard from '@/components/dashboard/StatsCard';
+import { 
+  LoadingState, 
+  StatsCard, 
+  DrawerMenu,
+  QuickActionCard,
+  ManagementCard
+} from "@/components/dashboard";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -46,202 +54,47 @@ const FadeInView = ({ children, delay = 0, duration = 500 }) => {
   );
 };
 
-// Custom Card Component for Management Sections
-const ManagementCard = ({ title, icon: Icon, onPress, subtitle, animationDelay = 0, gradientColors }) => {
-  const scale = useRef(new Animated.Value(1)).current;
-  const opacity = useRef(new Animated.Value(0)).current;
-  
-  useEffect(() => {
-    Animated.timing(opacity, {
-      toValue: 1,
-      duration: 400,
-      delay: animationDelay,
-      useNativeDriver: true,
-    }).start();
-  }, []);
-  
-  const onPressIn = () => {
-    Animated.spring(scale, {
-      toValue: 0.95,
-      friction: 8,
-      tension: 100,
-      useNativeDriver: true,
-    }).start();
-  };
-  
-  const onPressOut = () => {
-    Animated.spring(scale, {
-      toValue: 1,
-      friction: 8,
-      tension: 40,
-      useNativeDriver: true,
-    }).start();
-  };
-  
-  return (
-    <Animated.View 
-      style={{ 
-        transform: [{ scale }],
-        opacity,
-        flex: 1,
-      }}
-    >
-      <Button
-        variant="unstyled"
-        onPress={onPress}
-        onPressIn={onPressIn}
-        onPressOut={onPressOut}
-        className="p-0 h-[90px] overflow-hidden rounded-2xl"
-        style={{
-          elevation: Platform.OS === 'android' ? 4 : 0,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 4,
-        }}
-      >
-        <LinearGradient
-          colors={gradientColors || ['#4c669f', '#3b5998', '#192f6a']}
-          start={[0, 0]}
-          end={[1, 1]}
-          className="w-full h-full justify-center items-center rounded-2xl"
-        >
-          <VStack className="items-center space-y-1">
-            <Icon size={26} color="white" />
-            <Text className="text-white font-semibold text-sm">{title}</Text>
-            {subtitle && (
-              <Text className="text-white/80 text-xs">{subtitle}</Text>
-            )}
-          </VStack>
-        </LinearGradient>
-      </Button>
-    </Animated.View>
-  );
-};
-
-// Quick Action Card for consistent UI with Management Cards
-const QuickActionCard = ({ title, icon: Icon, subtitle, onPress, animationDelay = 0, gradientColors }) => {
-  const scale = useRef(new Animated.Value(1)).current;
-  const opacity = useRef(new Animated.Value(0)).current;
-  
-  useEffect(() => {
-    Animated.timing(opacity, {
-      toValue: 1,
-      duration: 400,
-      delay: animationDelay,
-      useNativeDriver: true,
-    }).start();
-  }, []);
-  
-  const onPressIn = () => {
-    Animated.spring(scale, {
-      toValue: 0.95,
-      friction: 8,
-      tension: 100,
-      useNativeDriver: true,
-    }).start();
-  };
-  
-  const onPressOut = () => {
-    Animated.spring(scale, {
-      toValue: 1,
-      friction: 8,
-      tension: 40,
-      useNativeDriver: true,
-    }).start();
-  };
-  
-  return (
-    <Animated.View 
-      style={{ 
-        transform: [{ scale }],
-        opacity,
-        flex: 1,
-      }}
-    >
-      <Button
-        variant="unstyled"
-        onPress={onPress}
-        onPressIn={onPressIn}
-        onPressOut={onPressOut}
-        className="p-0 h-[90px] overflow-hidden rounded-2xl"
-        style={{
-          elevation: Platform.OS === 'android' ? 4 : 0,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 4,
-        }}
-      >
-        <LinearGradient
-          colors={gradientColors}
-          start={[0, 0]}
-          end={[1, 1]}
-          className="w-full h-full justify-center items-center rounded-2xl p-4"
-        >
-          <VStack className="items-center space-y-1">
-            <Icon size={26} color="white" />
-            <Text className="text-white font-semibold text-sm">{title}</Text>
-            {subtitle && (
-              <Text className="text-white/80 text-xs">{subtitle}</Text>
-            )}
-          </VStack>
-        </LinearGradient>
-      </Button>
-    </Animated.View>
-  );
-};
-
 const Home = () => { 
   const { user, logout, loading } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
-  const [yearlyStats, setYearlyStats] = useState(null);
-  const [orderStats, setOrderStats] = useState({
-    total: 150,
-    pending: 25,
-    completed: 125
-  });
-  const [statsLoading, setStatsLoading] = useState(true);
   const [isReady, setIsReady] = useState(false);
+  const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const fabAnim = useRef(new Animated.Value(1)).current;
   const pathname = usePathname();
 
-  const fetchStats = async () => {
-    try {
-      setStatsLoading(true);
-      const [stats, yearly] = await Promise.all([
-        getOrderStats(),
-        getYearlyStats()
-      ]);
-      setOrderStats(stats);
-      setYearlyStats(yearly);
-    } catch (error) {
-      console.error('Failed to fetch stats:', error);
-    } finally {
-      setStatsLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchStats().then(() => {
-      setIsReady(true);
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    });
+    setIsReady(true);
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
     
     return () => {
       fadeAnim.setValue(0);
     };
   }, [pathname]);
 
+  // Animate FAB when drawer visibility changes
+  useEffect(() => {
+    Animated.timing(fabAnim, {
+      toValue: isDrawerVisible ? 0 : 1,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  }, [isDrawerVisible]);
+
+  // Toggle drawer visibility
+  const toggleDrawer = useCallback(() => {
+    setIsDrawerVisible(prev => !prev);
+  }, []);
+
+  // Hardcoded stats as requested
   const stats = [
     { 
       title: "Total Orders", 
-      value: statsLoading ? <RefreshCw className="animate-spin" size={20} color="white" /> : 
-             yearlyStats ? yearlyStats.total_orders.toString() : "0", 
+      value: "845", 
       color: "bg-primary-600",
       icon: Package,
       trend: "+12.5%",
@@ -249,8 +102,7 @@ const Home = () => {
     },
     { 
       title: "Orders Sent", 
-      value: statsLoading ? <RefreshCw className="animate-spin" size={20} color="white" /> : 
-             yearlyStats ? yearlyStats.pending_orders.toString() : "0",
+      value: "10",
       color: "bg-gradient-to-br from-warning-500 via-warning-600 to-warning-700",
       icon: Clock,
       trend: "+5.2%",
@@ -258,8 +110,7 @@ const Home = () => {
     },
     { 
       title: "Total Revenue", 
-      value: statsLoading ? <RefreshCw className="animate-spin" size={20} color="white" /> : 
-             yearlyStats ? `৳${yearlyStats.total_amount.toLocaleString()}` : "৳0",
+      value: "৳1,245,630",
       color: "bg-gradient-to-br from-success-500 via-success-600 to-success-700",
       icon: DollarSign,
       trend: "+8.1%",
@@ -269,8 +120,9 @@ const Home = () => {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await fetchStats();
-    setRefreshing(false);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 800);
   }, []);
 
   const getInitials = (name) => {
@@ -412,7 +264,7 @@ const Home = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onPress={fetchStats}
+                    onPress={onRefresh}
                     className="border-primary-100 bg-primary-50"
                   >
                     <HStack space="xs" className="items-center px-1">
@@ -438,7 +290,7 @@ const Home = () => {
               </VStack>
             </FadeInView>
 
-            {/* Quick Actions - Restructured to match Order Management layout */}
+            {/* Quick Actions - simplified structure */}
             <FadeInView delay={300} duration={400}>
               <VStack space="lg" className="mb-8">
                 <HStack className="justify-between items-center mb-4">
@@ -446,17 +298,6 @@ const Home = () => {
                     <Heading size="sm" className="text-gray-800">Quick Actions</Heading>
                     <Text className="text-gray-500 text-xs">Frequently used actions</Text>
                   </VStack>
-                  <Button
-                    variant="link"
-                    size="sm"
-                    onPress={() => {}}
-                    className="p-0"
-                  >
-                    <HStack space="xs" className="items-center">
-                      <ButtonText className="text-primary-500 text-sm">View All</ButtonText>
-                      <ChevronRight size={16} color="#ff8c00" />
-                    </HStack>
-                  </Button>
                 </HStack>
                 
                 <VStack space="md">
@@ -482,20 +323,20 @@ const Home = () => {
                   
                   <HStack space="md">
                     <QuickActionCard 
-                      title="Customer" 
-                      subtitle="Manage customers"
-                      icon={Users}
+                      title="Home" 
+                      subtitle="Dashboard"
+                      icon={House}
                       gradientColors={['#0891b2', '#0e7490']}
-                      onPress={() => {}}
+                      onPress={() => router.push('/home')}
                       animationDelay={450}
                     />
                     
                     <QuickActionCard 
-                      title="Inventory" 
-                      subtitle="Check stock"
-                      icon={Package}
+                      title="Profile" 
+                      subtitle="Account settings"
+                      icon={User}
                       gradientColors={['#16a34a', '#15803d']}
-                      onPress={() => router.push('/item-management')}
+                      onPress={() => router.push('/profile')}
                       animationDelay={500}
                     />
                   </HStack>
@@ -557,115 +398,41 @@ const Home = () => {
               </VStack>
             </FadeInView>
             
-            {/* Customer Management */}
-            <FadeInView delay={500} duration={400}>
-              <VStack space="lg" className="mb-8">
-                <HStack className="justify-between items-center mb-4">
-                  <VStack>
-                    <Heading size="sm" className="text-gray-800">Customer Management</Heading>
-                    <Text className="text-gray-500 text-xs">Manage customer information and data</Text>
-                  </VStack>
-                </HStack>
-                
-                <VStack space="md">
-                  <HStack space="md">
-                    <ManagementCard 
-                      title="Balance" 
-                      subtitle="Check & Adjust"
-                      icon={DollarSign}
-                      gradientColors={['#f59e0b', '#d97706']}
-                      onPress={() => router.push('/customer-balance')}
-                      animationDelay={750}
-                    />
-                    
-                    <ManagementCard 
-                      title="Feedback" 
-                      subtitle="Reviews & Ratings"
-                      icon={MessageSquare}
-                      gradientColors={['#8b5cf6', '#7c3aed']}
-                      onPress={() => {}}
-                      animationDelay={800}
-                    />
-                  </HStack>
-                  
-                  <HStack space="md">
-                    <ManagementCard 
-                      title="Analysis" 
-                      subtitle="Behavior & Trends"
-                      icon={BarChart2}
-                      gradientColors={['#ec4899', '#db2777']}
-                      onPress={() => {}}
-                      animationDelay={850}
-                    />
-                    
-                    <ManagementCard 
-                      title="Profiles" 
-                      subtitle="Account Details"
-                      icon={Users}
-                      gradientColors={['#06b6d4', '#0891b2']}
-                      onPress={() => {}}
-                      animationDelay={900}
-                    />
-                  </HStack>
-                </VStack>
-              </VStack>
-            </FadeInView>
-            
-            {/* Product Management */}
-            <FadeInView delay={550} duration={400}>
-              <VStack space="lg" className="mb-8">
-                <HStack className="justify-between items-center mb-4">
-                  <VStack>
-                    <Heading size="sm" className="text-gray-800">Product Management</Heading>
-                    <Text className="text-gray-500 text-xs">Manage your products and inventory</Text>
-                  </VStack>
-                </HStack>
-                
-                <VStack space="md">
-                  <HStack space="md">
-                    <ManagementCard 
-                      title="Inventory" 
-                      subtitle="Stock Management"
-                      icon={Package}
-                      gradientColors={['#22c55e', '#16a34a']}
-                      onPress={() => router.push('/item-management')}
-                      animationDelay={950}
-                    />
-                    
-                    <ManagementCard 
-                      title="Catalog" 
-                      subtitle="Product Listings"
-                      icon={ShoppingCart}
-                      gradientColors={['#f59e0b', '#d97706']}
-                      onPress={() => router.push('/fetch_items')}
-                      animationDelay={1000}
-                    />
-                  </HStack>
-                  
-                  <HStack space="md">
-                    <ManagementCard 
-                      title="Search" 
-                      subtitle="Find Products"
-                      icon={Search}
-                      gradientColors={['#f43f5e', '#e11d48']}
-                      onPress={() => {}}
-                      animationDelay={1050}
-                    />
-                    
-                    <ManagementCard 
-                      title="Settings" 
-                      subtitle="Product Preferences"
-                      icon={Settings}
-                      gradientColors={['#64748b', '#475569']}
-                      onPress={() => {}}
-                      animationDelay={1100}
-                    />
-                  </HStack>
-                </VStack>
-              </VStack>
-            </FadeInView>
+            {/* Bottom padding for FAB */}
+            <Box className="h-16" />
           </Box>
         </ScrollView>
+        
+        {/* Floating Action Button */}
+        <Animated.View 
+          style={{
+            position: 'absolute',
+            right: 16,
+            bottom: 16,
+            opacity: fabAnim,
+            transform: [
+              { scale: fabAnim },
+              { translateY: fabAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [20, 0]
+              })}
+            ]
+          }}
+        >
+          <Fab
+            size="lg"
+            placement="bottom right"
+            isDisabled={isDrawerVisible}
+            onPress={toggleDrawer}
+            renderBackdrop={() => null}
+            className="bg-primary-500 active:bg-primary-600"
+          >
+            <FabIcon as={Menu} />
+          </Fab>
+        </Animated.View>
+        
+        {/* Drawer Menu */}
+        <DrawerMenu isVisible={isDrawerVisible} onClose={() => setIsDrawerVisible(false)} />
       </Animated.View>
     </SafeAreaView>
   );

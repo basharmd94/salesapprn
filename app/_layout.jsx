@@ -6,7 +6,6 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { config } from '@gluestack-ui/config';
 import { router } from 'expo-router';
@@ -42,16 +41,16 @@ export default function RootLayout() {
     <GluestackUIProvider config={config}>
       <AuthProvider>
           <Stack
-            screenOptions={{
-              // Safe default animation settings to prevent the sceneStyleInterpolator error
-              animation: 'fade',
-              headerShown: false,
-              // Disable custom interpolators that could cause issues
-              animationEnabled: true,
-              presentation: 'card',
-              // Adding reasonable animation duration
-              animationDuration: 250,
-            }}
+            // screenOptions={{
+            //   // Safe default animation settings to prevent the sceneStyleInterpolator error
+            //   animation: 'fade',
+            //   headerShown: false,
+            //   // Disable custom interpolators that could cause issues
+            //   animationEnabled: true,
+            //   presentation: 'card',
+            //   // Adding reasonable animation duration
+            //   animationDuration: 250,
+            // }}
           >
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="(screens)" options={{ headerShown: false }} />

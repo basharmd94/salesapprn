@@ -224,19 +224,6 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="item-management"
-          listeners={{
-            tabPress: (e) => {
-              e.preventDefault();
-              handleTabNavigation("/item-management");
-            },
-          }}
-          options={{
-            title: 'Items',
-            tabBarIcon: renderItemsTabIcon,
-          }}
-        />
-        <Tabs.Screen
           name="profile"
           options={{
             title: 'Profile',

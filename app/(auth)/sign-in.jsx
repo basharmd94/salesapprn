@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
 import { Box } from '@/components/ui/box';
 import { Button } from '@/components/ui/button';
 import { ButtonText, ButtonIcon, ButtonSpinner } from '@/components/ui/button';
@@ -19,6 +18,7 @@ import { Alert, AlertText, AlertIcon } from '@/components/ui/alert';
 import { InfoIcon } from '@/components/ui/icon';
 import { useAuth } from '@/context/AuthContext';
 import { Image } from '@/components/ui/image';
+import logger from '@/utils/logger';
 
 const SignIn = () => {
   const [username, setUsername] = useState('');
@@ -26,14 +26,7 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const { login, user } = useAuth();
-
-  // Check if user is already logged in
-  useEffect(() => {
-    if (user) {
-      router.replace('/(tabs)/home');
-    }
-  }, [user]);
+  const { login } = useAuth();
 
   // Load saved credentials when component mounts
   useEffect(() => {
@@ -45,7 +38,7 @@ const SignIn = () => {
         if (savedUsername) setUsername(savedUsername);
         if (savedPassword) setPassword(savedPassword);
       } catch (error) {
-        console.error('Error loading saved credentials:', error);
+        logger.error('Error loading saved credentials', { error });
       }
     };
     
@@ -61,8 +54,10 @@ const SignIn = () => {
       setIsLoading(true);
       setError('');
       
-      // Additional logging to help diagnose issues
-      console.log(`Login attempt: ${username} in ${__DEV__ ? 'development' : 'production'} mode`);
+      logger.debug('Login attempt', { 
+        username, 
+        environment: __DEV__ ? 'development' : 'production'
+      });
       
       await login(username, password);
       
@@ -70,11 +65,13 @@ const SignIn = () => {
       await AsyncStorage.setItem('savedUsername', username);
       await AsyncStorage.setItem('savedPassword', password);
       
-      // Explicitly navigate to home on successful login
-      router.replace('/(tabs)/home');
-      
     } catch (err) {
-      console.error('Login error details:', err);
+      logger.error('Login failed', { 
+        errorType: err.name,
+        errorMessage: err.message,
+        hasNetworkError: err.message?.includes('Network Error'),
+        hasResponseData: !!err.response?.data
+      });
       
       // Handle different error types
       if (err.message?.includes('Network Error')) {
