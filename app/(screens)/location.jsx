@@ -3,24 +3,19 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { Heading } from "@/components/ui/heading";
-import { ScrollView, StyleSheet, Dimensions, ActivityIndicator, Platform, Share, Linking, View, Alert } from "react-native";
+import { ScrollView, Dimensions, ActivityIndicator, Platform, Share, Linking, View, Alert } from "react-native";
 import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
 import { Button, ButtonText, ButtonIcon } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { RefreshCw, MapPin, Navigation, Share2, Compass, Upload, CheckCircle, Server, AlertTriangle } from 'lucide-react-native';
+import { RefreshCw, MapPin, Navigation, Share2, Upload, CheckCircle, Server, AlertTriangle } from 'lucide-react-native';
 import * as Location from 'expo-location';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useAuth } from "@/context/AuthContext";
-import MapView, { Marker } from 'react-native-maps';
 import { sendLocation } from '@/lib/api_location';
 import { getLocationRequestsInfo, incrementLocationRequest } from '@/utils/locationLimiter';
 
 const { width, height } = Dimensions.get('window');
-
-const ASPECT_RATIO = width / height;
-const LATITUDE_DELTA = 0.0922;
-const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export default function LocationScreen() {
   const { user } = useAuth();
@@ -28,7 +23,6 @@ export default function LocationScreen() {
   const [errorMsg, setErrorMsg] = useState(null);
   const [loading, setLoading] = useState(true);
   const [address, setAddress] = useState(null);
-  const [mapRegion, setMapRegion] = useState(null);
   const [sendingToAPI, setSendingToAPI] = useState(false);
   const [apiSendSuccess, setApiSendSuccess] = useState(false);
   const [requestsInfo, setRequestsInfo] = useState({ remaining: 0, resetTime: "24h 0m" });
@@ -59,14 +53,6 @@ export default function LocationScreen() {
         });
         setLocation(location);
         
-        // Set the map region based on current location
-        setMapRegion({
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          latitudeDelta: LATITUDE_DELTA,
-          longitudeDelta: LONGITUDE_DELTA,
-        });
-        
         // Get reverse geocoding to find the address
         const addressResponse = await Location.reverseGeocodeAsync({
           latitude: location.coords.latitude,
@@ -93,14 +79,6 @@ export default function LocationScreen() {
         accuracy: Location.Accuracy.Balanced,
       });
       setLocation(location);
-      
-      // Update map region
-      setMapRegion({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-        latitudeDelta: LATITUDE_DELTA,
-        longitudeDelta: LONGITUDE_DELTA,
-      });
       
       // Get reverse geocoding to find the address
       const addressResponse = await Location.reverseGeocodeAsync({
@@ -318,46 +296,6 @@ export default function LocationScreen() {
   } else if (location) {
     locationContent = (
       <VStack space="lg" className="p-4">
-        {/* Map Card */}
-        <Card className="bg-white rounded-2xl p-4 mb-2">
-          <VStack space="md">
-            <HStack className="items-center mb-2">
-              <Box className="bg-orange-400 p-2 rounded-lg mr-3">
-                <Compass size={24} color="#fff" />
-              </Box>
-              <Heading size="md">Location Map</Heading>
-            </HStack>
-            
-            {mapRegion && (
-              <View style={styles.mapContainer}>
-                <MapView
-                  style={styles.map}
-                  region={mapRegion}
-                  showsUserLocation={true}
-                  showsMyLocationButton={true}
-                  showsCompass={true}
-                  toolbarEnabled={true}
-                >
-                  <Marker
-                    coordinate={{
-                      latitude: location.coords.latitude,
-                      longitude: location.coords.longitude,
-                    }}
-                    title={address?.name || "My Location"}
-                    description={address ? [
-                      address.street,
-                      address.city,
-                      address.region,
-                      address.country
-                    ].filter(Boolean).join(", ") : "Current Position"}
-                    pinColor="#f97316"
-                  />
-                </MapView>
-              </View>
-            )}
-          </VStack>
-        </Card>
-
         <Card className="bg-white rounded-2xl p-6 mb-2">
           <VStack space="md">
             <HStack className="items-center mb-2">
@@ -580,18 +518,3 @@ export default function LocationScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  mapContainer: {
-    height: 300,
-    width: '100%',
-    borderRadius: 16,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#f1f5f9',
-  },
-  map: {
-    width: '100%',
-    height: '100%',
-  },
-});

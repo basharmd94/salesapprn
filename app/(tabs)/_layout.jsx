@@ -1,70 +1,11 @@
 import { router, Tabs } from 'expo-router';
-import { Platform, Animated, View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { House, Package, User, ShoppingBag, CirclePlus, Send, ChevronLeft, Boxes } from 'lucide-react-native';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import { Pressable } from '@/components/ui/pressable';
-import { Spinner } from '@/components/ui/spinner';
 import { Center } from '@/components/ui/center';
-import { useCallback, useState, useRef, useEffect } from 'react';
-
-// Custom TabNavigationIndicator Component
-const TabNavigationIndicator = () => {
-  const opacity = useRef(new Animated.Value(0)).current;
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const startTimeout = setTimeout(() => {
-      setIsVisible(true);
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
-    }, 150); // Small delay before showing indicator
-
-    // Auto-hide after a short period in case navigation completes quickly
-    const hideTimeout = setTimeout(() => {
-      hideIndicator();
-    }, 800);
-
-    return () => {
-      clearTimeout(startTimeout);
-      clearTimeout(hideTimeout);
-    };
-  }, []);
-
-  const hideIndicator = () => {
-    Animated.timing(opacity, {
-      toValue: 0,
-      duration: 150,
-      useNativeDriver: true,
-    }).start(() => setIsVisible(false));
-  };
-
-  if (!isVisible) return null;
-
-  return (
-    <Animated.View
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 999,
-        opacity,
-      }}
-    >
-      <Center>
-        <Spinner size="large" color="$primary" />
-      </Center>
-    </Animated.View>
-  );
-};
+import { useCallback } from 'react';
 
 const TabBarIcon = ({ focused, color, icon: Icon }) => {
   return (
@@ -79,23 +20,8 @@ const TabBarIcon = ({ focused, color, icon: Icon }) => {
 };
 
 export default function TabLayout() {
-  const [isNavigating, setIsNavigating] = useState(false);
-  const navigationTimeout = useRef(null);
-
-  // Custom navigation handler that shows indicators
+  // Simplified navigation handler without indicators
   const handleTabNavigation = useCallback((route) => {
-    setIsNavigating(true);
-    
-    // Clear previous timeout if it exists
-    if (navigationTimeout.current) {
-      clearTimeout(navigationTimeout.current);
-    }
-    
-    // Set a timeout to hide indicator after navigation is likely complete
-    navigationTimeout.current = setTimeout(() => {
-      setIsNavigating(false);
-    }, 800);
-    
     router.push(route);
   }, []);
 
@@ -106,18 +32,8 @@ export default function TabLayout() {
   const renderItemsTabIcon = useCallback((props) => <TabBarIcon {...props} icon={Boxes} />, []);
   const renderProfileTabIcon = useCallback((props) => <TabBarIcon {...props} icon={User} />, []);
   
-  // Cleanup navigation timeout when component unmounts
-  useEffect(() => {
-    return () => {
-      if (navigationTimeout.current) {
-        clearTimeout(navigationTimeout.current);
-      }
-    };
-  }, []);
-  
   return (
     <View style={{ flex: 1 }}>
-      {isNavigating && <TabNavigationIndicator />}
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: '#FFA001',
@@ -144,9 +60,9 @@ export default function TabLayout() {
           },
           // Optimized tab navigation performance
           unmountOnBlur: false,
-          lazy: true,
-          freezeOnBlur: false, // Prevents freezing UI when tab is not focused
-          detachInactiveScreens: false, // Keep inactive screens attached for faster switching
+          lazy: false, // Changed to false to prevent loading delays
+          freezeOnBlur: false,
+          detachInactiveScreens: false,
           detachPreviousScreen: false,
         }}
       >
