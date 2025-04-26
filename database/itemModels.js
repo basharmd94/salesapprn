@@ -65,9 +65,11 @@ const getItems = async (zid, searchText, limit = 20, offset = 0) => {
   let query = 'SELECT * FROM item WHERE zid = ?';
   const params = [zid];
   
-  if (searchText && searchText.length > 0) {
+  if (searchText && searchText.trim().length > 0) {
+    // Clean search text and ensure it's properly used for all requests
+    const cleanedSearch = searchText.trim();
     query += ' AND (item_name LIKE ? OR item_id LIKE ?)';
-    params.push(`%${searchText}%`, `%${searchText}%`);
+    params.push(`%${cleanedSearch}%`, `%${cleanedSearch}%`);
   }
   
   query += ' ORDER BY item_name LIMIT ? OFFSET ?';

@@ -52,6 +52,8 @@ export default function CreateOrder() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [itemsLoading, setItemsLoading] = useState(false);
+  const [loadingMoreItems, setLoadingMoreItems] = useState(false); // Add state for loading more items
+  const [currentItemOffset, setCurrentItemOffset] = useState(0); // Track current offset for item pagination
   const [submitting, setSubmitting] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   
@@ -313,32 +315,60 @@ export default function CreateOrder() {
     }
   }, [zid, user]);
 
-  const searchItems = useCallback(async (searchText) => {
+  const searchItems = useCallback(async (searchText, loadMore = false) => {
     if (!zid || searchText.length < 2) {
       setItems([]);
+      setCurrentItemOffset(0);
       return;
     }
     
     try {
-      setItemsLoading(true);
+      // If we're loading more, use loadingMoreItems state, otherwise use regular loading state
+      if (loadMore) {
+        setLoadingMoreItems(true);
+      } else {
+        setItemsLoading(true);
+        // Reset offset when starting a new search
+        setCurrentItemOffset(0);
+      }
       
-      const results = await getItems(zid, searchText, LIMIT, 0);
+      // Calculate the correct offset based on whether we're loading more
+      const offset = loadMore ? currentItemOffset : 0;
+      
+      const results = await getItems(zid, searchText, LIMIT, offset);
       const newItems = results || [];
       
       if (!mountedRef.current) return;
       
-      setItems(newItems);
+      // If we're loading more, append the results; otherwise replace
+      if (loadMore && offset > 0) {
+        setItems(prevItems => [...prevItems, ...newItems]);
+      } else {
+        setItems(newItems);
+      }
+      
+      // Update the offset for next pagination request
+      if (newItems.length > 0) {
+        setCurrentItemOffset(offset + newItems.length);
+      }
     } catch (error) {
       console.error("Error searching items:", error);
       if (mountedRef.current) {
-        setItems([]);
+        if (!loadMore) {
+          setItems([]);
+          setCurrentItemOffset(0);
+        }
       }
     } finally {
       if (mountedRef.current) {
-        setItemsLoading(false);
+        if (loadMore) {
+          setLoadingMoreItems(false);
+        } else {
+          setItemsLoading(false);
+        }
       }
     }
-  }, [zid]);
+  }, [zid, currentItemOffset]);
 
   const handleCustomerSearch = useCallback((text) => {
     setCustomerSearchText(text);
@@ -475,6 +505,7 @@ export default function CreateOrder() {
                 searchText={itemSearchText} 
                 setSearchText={handleItemSearch}
                 onSearch={searchItems}
+                loadingMore={loadingMoreItems}
               />
 
               <MemoizedQuantityInput

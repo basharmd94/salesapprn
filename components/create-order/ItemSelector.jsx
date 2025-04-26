@@ -87,7 +87,7 @@ export default function ItemSelector({
   const debouncedSearch = useCallback(
     debounce((text) => {
       setSearchText(text);
-      if (text.length >= 1) {
+      if (text.length >= 2) {
         onSearch(text);
       } else {
         // Clear items when search is empty
@@ -116,7 +116,7 @@ export default function ItemSelector({
       setLocalSearchText(searchText || '');
       
       // Only trigger search on initial open if searchText exists
-      if (searchText?.length >= 1 && !initialSearchDoneRef.current) {
+      if (searchText?.length >= 2 && !initialSearchDoneRef.current) {
         initialSearchDoneRef.current = true;
         // Use timeout to prevent immediate search that could cause update loop
         setTimeout(() => {
@@ -146,8 +146,9 @@ export default function ItemSelector({
     />
   ), [onItemSelect, setShowItemSheet]);
 
-  const getItemKey = useCallback((item) => 
-    `item-${item.item_id}-${zid}`, 
+  // Updated key extractor to generate truly unique keys
+  const getItemKey = useCallback((item, index) => 
+    `item-${item.item_id}-${zid}-${index}`, 
   [zid]);
 
   // Create a loading footer component
@@ -163,6 +164,16 @@ export default function ItemSelector({
       </View>
     );
   }, [loadingMore]);
+
+  // Handle loading more items with current search term
+  const handleLoadMore = useCallback(() => {
+    if (items.length > 2 && !loading && !loadingMore) {
+      // Make sure to use the current search text when loading more
+      if (localSearchText.trim().length > 2) {
+        onSearch(localSearchText);
+      }
+    }
+  }, [items.length, loading, loadingMore, localSearchText, onSearch]);
 
   return (
     <VStack space="md">
@@ -261,7 +272,7 @@ export default function ItemSelector({
               removeClippedSubviews={true}
               initialNumToRender={10}
               maxToRenderPerBatch={10}
-              updateCellsBatchingPeriod={50}
+              updateCellsBatchingPeriod={10}
               windowSize={11}
               keyboardShouldPersistTaps="handled"
               keyboardDismissMode="on-drag"
@@ -269,10 +280,10 @@ export default function ItemSelector({
               contentContainerStyle={{ 
                 flexGrow: items.length === 0 ? 1 : undefined,
                 paddingTop: 8,
-                paddingBottom: 20 
+                paddingBottom: 20
               }}
-              onEndReached={items.length > 0 ? onSearch : null} // Trigger search for more items when reaching the end
-              onEndReachedThreshold={0.3} // Start loading more when user is 30% from the end
+              onEndReached={handleLoadMore} // Use our new handler
+              onEndReachedThreshold={0.3}
             />
           </View>
         </DrawerContent>
