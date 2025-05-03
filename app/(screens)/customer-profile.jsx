@@ -11,21 +11,23 @@ import {
 } from "react-native";
 import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
-import { useLocalSearchParams, useRouter, Stack } from "expo-router";
-import { ArrowLeft, Search, ShoppingBag, Filter } from 'lucide-react-native';
-import { searchItems, COMPANY_ZIDS, COMPANY_NAMES } from '@/lib/api_items';
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { ArrowLeft, Search, Users, Filter } from 'lucide-react-native';
+import { COMPANY_ZIDS, COMPANY_NAMES } from '@/lib/api_items';
 import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input";
 import { Button, ButtonText } from "@/components/ui/button";
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Pressable } from "react-native";
 import { Fab, FabIcon } from "@/components/ui/fab";
+import { useAuth } from '@/context/AuthContext';
+import { getCustomers } from '@/database/customerModels';
 
 // Import our reusable components
-import ItemCard from '@/components/items/ItemCard';
-import ItemSkeleton from '@/components/items/ItemSkeleton';
-import CompanyFilterDrawer from '@/components/items/CompanyFilterDrawer';
+import CustomerCard from '@/components/customers/CustomerCard';
+import CustomerSkeleton from '@/components/customers/CustomerSkeleton';
+import CompanyFilterDrawer from '@/components/customers/CompanyFilterDrawer';
 
-export default function FetchItemsScreen() {
+export default function CustomerProfileScreen() {
   // Get params from route or use default (HMBR)
   const params = useLocalSearchParams();
   const defaultZid = COMPANY_ZIDS.HMBR;
@@ -34,7 +36,10 @@ export default function FetchItemsScreen() {
   const [zid, setZid] = useState(params.zid || defaultZid);
   const [companyName, setCompanyName] = useState(params.companyName || defaultCompanyName);
   const router = useRouter();
-  const [items, setItems] = useState([]);
+  const { user } = useAuth();
+  const userId = user?.user_id;
+
+  const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -43,7 +48,7 @@ export default function FetchItemsScreen() {
   const [hasMore, setHasMore] = useState(true);
   const [searching, setSearching] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const LIMIT = 10;
+  const LIMIT = 20;
 
   // Hide the navigation header for this screen
   React.useEffect(() => {
@@ -52,7 +57,7 @@ export default function FetchItemsScreen() {
     });
   }, [router]);
 
-  const fetchItems = useCallback(async (reset = false) => {
+  const fetchCustomers = useCallback(async (reset = false) => {
     if (!zid || (!hasMore && !reset)) return;
     
     try {
@@ -63,13 +68,14 @@ export default function FetchItemsScreen() {
       }
       
       const newOffset = reset ? 0 : offset;
-      const result = await searchItems(zid, searchText, LIMIT, newOffset);
+      // Use the SQLite database function to get customers
+      const result = await getCustomers(zid, searchText, userId, LIMIT, newOffset);
       
       if (result && result.length > 0) {
         if (reset) {
-          setItems(result);
+          setCustomers(result);
         } else {
-          setItems(prev => [...prev, ...result]);
+          setCustomers(prev => [...prev, ...result]);
         }
         
         setOffset(newOffset + LIMIT);
@@ -77,44 +83,44 @@ export default function FetchItemsScreen() {
       } else {
         setHasMore(false);
         if (reset) {
-          setItems([]);
+          setCustomers([]);
         }
       }
     } catch (error) {
-      console.error('Error fetching items:', error);
+      console.error('Error fetching customers:', error);
     } finally {
       setLoading(false);
       setLoadingMore(false);
       setRefreshing(false);
     }
-  }, [zid, searchText, offset, hasMore]);
+  }, [zid, searchText, offset, hasMore, userId]);
 
   // Initial fetch
   useEffect(() => {
-    fetchItems(true);
+    fetchCustomers(true);
   }, [zid]); // Trigger refetch when zid changes
 
   const handleRefresh = useCallback(() => {
     setRefreshing(true);
     setOffset(0);
     setHasMore(true);
-    fetchItems(true);
-  }, [fetchItems]);
+    fetchCustomers(true);
+  }, [fetchCustomers]);
 
   const handleLoadMore = useCallback(() => {
     if (!loading && !loadingMore && hasMore) {
-      fetchItems();
+      fetchCustomers();
     }
-  }, [loading, loadingMore, hasMore, fetchItems]);
+  }, [loading, loadingMore, hasMore, fetchCustomers]);
 
   const handleSearch = useCallback(() => {
     setSearching(true);
     setOffset(0);
     setHasMore(true);
-    fetchItems(true).finally(() => {
+    fetchCustomers(true).finally(() => {
       setSearching(false);
     });
-  }, [fetchItems]);
+  }, [fetchCustomers]);
 
   const handleFilterSelect = useCallback((newZid, newCompanyName) => {
     // Update URL params to maintain state on refresh
@@ -127,17 +133,28 @@ export default function FetchItemsScreen() {
     setZid(newZid);
     setCompanyName(newCompanyName);
     setOffset(0);
-    setItems([]);
+    setCustomers([]);
     setHasMore(true);
-    // fetchItems will be triggered by the effect when zid changes
+    // fetchCustomers will be triggered by the effect when zid changes
+  }, [router]);
+
+  const handleViewCustomerDetails = useCallback((customer) => {
+    router.push({
+      pathname: "/customer-balance-details",
+      params: { 
+        zid: customer.zid,
+        xcus: customer.xcus,
+        xorg: customer.xorg
+      }
+    });
   }, [router]);
 
   const renderFooter = () => {
-    if (!loadingMore || items.length === 0) return null;
+    if (!loadingMore || customers.length === 0) return null;
     
     return (
       <Box className="py-4 items-center">
-        <ActivityIndicator size="small" color="#f97316" />
+        <ActivityIndicator size="small" color="#4f46e5" />
       </Box>
     );
   };
@@ -147,7 +164,7 @@ export default function FetchItemsScreen() {
       return (
         <VStack space="md" className="p-4">
           {[...Array(5)].map((_, index) => (
-            <ItemSkeleton key={index} />
+            <CustomerSkeleton key={index} />
           ))}
         </VStack>
       );
@@ -155,16 +172,16 @@ export default function FetchItemsScreen() {
     
     return (
       <Box className="py-8 items-center justify-center">
-        <ShoppingBag size={60} color="#d1d5db" />
+        <Users size={60} color="#d1d5db" />
         <Text className="text-gray-400 mt-4 text-center">
-          No items found. Try a different search term.
+          No customers found. Try a different search term.
         </Text>
       </Box>
     );
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
       <Box className="bg-white py-4 px-4 shadow-sm">
         <HStack space="md" alignItems="center">
           <Pressable onPress={() => router.back()}>
@@ -173,7 +190,7 @@ export default function FetchItemsScreen() {
             </Box>
           </Pressable>
           <VStack>
-            <Heading size="md">{companyName} Items</Heading>
+            <Heading size="md">{companyName} Customers</Heading>
             <Text className="text-gray-500">ZID: {zid}</Text>
           </VStack>
         </HStack>
@@ -191,7 +208,7 @@ export default function FetchItemsScreen() {
               </InputIcon>
             </InputSlot>
             <InputField
-              placeholder="Search items..."
+              placeholder="Search customers..."
               value={searchText}
               onChangeText={setSearchText}
               returnKeyType="search"
@@ -199,7 +216,7 @@ export default function FetchItemsScreen() {
             />
           </Input>
           <Button 
-            className="bg-orange-500" 
+            className="bg-indigo-600" 
             onPress={handleSearch}
             isDisabled={searching}
           >
@@ -213,10 +230,20 @@ export default function FetchItemsScreen() {
       </Animated.View>
       
       <FlatList
-        data={items}
-        renderItem={({ item }) => <ItemCard item={item} />}
-        keyExtractor={(item) => `${item.zid}-${item.item_id}`}
-        contentContainerStyle={{ padding: 16 }}
+        data={customers}
+        renderItem={({ item }) => (
+          <Animated.View 
+            entering={FadeInDown.duration(300).delay(100)}
+            className="px-4"
+          >
+            <CustomerCard 
+              customer={item}
+              onPress={() => handleViewCustomerDetails(item)}
+            />
+          </Animated.View>
+        )}
+        keyExtractor={(item) => `${item.zid}-${item.xcus}`}
+        contentContainerStyle={{ paddingBottom: 80 }} // Add padding to bottom for FAB
         ListFooterComponent={renderFooter}
         ListEmptyComponent={renderEmptyComponent}
         onEndReached={handleLoadMore}
@@ -225,21 +252,23 @@ export default function FetchItemsScreen() {
           <RefreshControl 
             refreshing={refreshing} 
             onRefresh={handleRefresh}
-            colors={["#f97316"]}
-            tintColor="#f97316"
+            colors={["#4f46e5"]}
+            tintColor="#4f46e5"
           />
         }
       />
 
       {/* Filter FAB */}
-      <Fab
-        size="md"
-        placement="bottom right"
-        onPress={() => setIsFilterOpen(true)}
-        className="bg-orange-500 active:bg-orange-600 m-4"
-      >
-        <FabIcon as={Filter} />
-      </Fab>
+      <Box className="absolute bottom-6 right-6 z-50">
+        <Fab
+          size="lg"
+          placement="bottom right"
+          onPress={() => setIsFilterOpen(true)}
+          className="bg-indigo-600 active:bg-indigo-700"
+        >
+          <FabIcon as={Filter} color="#ffffff" />
+        </Fab>
+      </Box>
 
       {/* Company Filter Drawer */}
       <CompanyFilterDrawer

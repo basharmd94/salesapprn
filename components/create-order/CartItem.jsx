@@ -3,7 +3,7 @@ import { Text } from "@/components/ui/text";
 import { Button, ButtonIcon } from "@/components/ui/button";
 import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
-import { Trash2 } from "lucide-react-native";
+import { Trash2, ShoppingCart, DollarSign, Hash } from "lucide-react-native";
 import Animated, { 
   useAnimatedStyle, 
   withSpring, 
@@ -38,23 +38,32 @@ export default function CartItem({ item, onRemove }) {
           <Text className="text-sm font-semibold text-primary-400 mb-2 ">
             {item.xdesc.length > 30 ? item.xdesc.substring(0, 30) + "..." : item.xdesc}
           </Text>
-          <HStack space="3" alignItems="center">
+          <HStack space="3" alignItems="center" flexWrap="wrap">
             <Box className="bg-warning-400 px-2.5 py-1 rounded-full">
-              <Text className="text-xs font-medium text-primary-800">
-                Qty: {item.xqty}
-              </Text>
+              <HStack space="1" alignItems="center">
+                <ShoppingCart size={12} color="#1e40af" />
+                <Text className="text-xs font-medium text-primary-800">
+                  Qty: {item.xqty}
+                </Text>
+              </HStack>
             </Box>
             <Text className="text-orange-400"> ➞ </Text>
             <Box className="bg-green-50 px-2.5 py-1 rounded-full">
-              <Text className="text-xs font-medium text-green-800">
-                ৳{item.xprice}
-              </Text>
+              <HStack space="1" alignItems="center">
+                <DollarSign size={12} color="#166534" />
+                <Text className="text-xs font-medium text-green-800">
+                  Unit: ৳{item.xprice}
+                </Text>
+              </HStack>
             </Box>
             <Text className="text-orange-400"> ➞ </Text>
             <Box className="bg-purple-50 px-2.5 py-1 rounded-full">
-              <Text className="text-xs font-bold text-purple-900">
-                ৳{item.xlinetotal}
-              </Text>
+              <HStack space="1" alignItems="center">
+                <Hash size={12} color="#581c87" />
+                <Text className="text-xs font-bold text-purple-900">
+                  Total: ৳{item.xlinetotal}
+                </Text>
+              </HStack>
             </Box>
           </HStack>
         </VStack>

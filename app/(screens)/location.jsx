@@ -6,14 +6,15 @@ import { Heading } from "@/components/ui/heading";
 import { ScrollView, Dimensions, ActivityIndicator, Platform, Share, Linking, View, Alert } from "react-native";
 import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
-import { Button, ButtonText, ButtonIcon } from "@/components/ui/button";
+import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { RefreshCw, MapPin, Navigation, Share2, Upload, CheckCircle, Server, AlertTriangle } from 'lucide-react-native';
+import { RefreshCw, MapPin, Navigation, Share2, Upload, CheckCircle, Server, AlertTriangle, Send } from 'lucide-react-native';
 import * as Location from 'expo-location';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useAuth } from "@/context/AuthContext";
 import { sendLocation } from '@/lib/api_location';
 import { getLocationRequestsInfo, incrementLocationRequest } from '@/utils/locationLimiter';
+import { Badge, BadgeText } from "@/components/ui/badge";
 
 const { width, height } = Dimensions.get('window');
 
@@ -27,7 +28,6 @@ export default function LocationScreen() {
   const [apiSendSuccess, setApiSendSuccess] = useState(false);
   const [requestsInfo, setRequestsInfo] = useState({ remaining: 0, resetTime: "24h 0m" });
   
-  // Fetch location request count on component mount
   useEffect(() => {
     const loadRequestsInfo = async () => {
       const info = await getLocationRequestsInfo();
@@ -53,7 +53,6 @@ export default function LocationScreen() {
         });
         setLocation(location);
         
-        // Get reverse geocoding to find the address
         const addressResponse = await Location.reverseGeocodeAsync({
           latitude: location.coords.latitude,
           longitude: location.coords.longitude,
@@ -80,7 +79,6 @@ export default function LocationScreen() {
       });
       setLocation(location);
       
-      // Get reverse geocoding to find the address
       const addressResponse = await Location.reverseGeocodeAsync({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
@@ -100,7 +98,6 @@ export default function LocationScreen() {
     if (!location) return;
 
     try {
-      // Format full address for sharing
       let formattedAddress = "";
       if (address) {
         const addressParts = [];
@@ -114,13 +111,10 @@ export default function LocationScreen() {
         formattedAddress = addressParts.join(", ");
       }
 
-      // Create Google Maps link with coordinates
       const googleMapsUrl = `https://www.google.com/maps?q=${location.coords.latitude},${location.coords.longitude}`;
       
-      // Create message with location info
       const message = `📍 My Current Location:\n\n📌 Coordinates: ${location.coords.latitude.toFixed(6)}, ${location.coords.longitude.toFixed(6)}\n\n📍 ${formattedAddress}\n\n📲 View on Maps: ${googleMapsUrl}`;
 
-      // Share via system share sheet (works with WhatsApp and other apps)
       await Share.share({
         message: message,
         title: "My Location"
@@ -134,10 +128,8 @@ export default function LocationScreen() {
     if (!location) return;
 
     try {
-      // Create Google Maps link with coordinates
       const googleMapsUrl = `https://www.google.com/maps?q=${location.coords.latitude},${location.coords.longitude}`;
       
-      // Format the address for sharing
       let formattedAddress = "";
       if (address) {
         const addressParts = [];
@@ -151,16 +143,12 @@ export default function LocationScreen() {
         formattedAddress = addressParts.join(", ");
       }
       
-      // Create message with location info
       const message = `📍 My Current Location:\n\n📌 Coordinates: ${location.coords.latitude.toFixed(6)}, ${location.coords.longitude.toFixed(6)}\n\n📍 ${formattedAddress}\n\n📲 View on Maps: ${googleMapsUrl}`;
       
-      // Encode the message for a URL
       const encodedMessage = encodeURIComponent(message);
       
-      // Create WhatsApp deep link
       const whatsappUrl = `whatsapp://send?text=${encodedMessage}`;
       
-      // Open WhatsApp with the location message
       Linking.openURL(whatsappUrl).catch(err => {
         console.error('WhatsApp is not installed or could not be opened', err);
       });
@@ -173,7 +161,6 @@ export default function LocationScreen() {
     if (!location || !user) return;
     
     try {
-      // Check if we have any requests remaining for today
       const result = await incrementLocationRequest();
       
       if (!result.success) {
@@ -185,7 +172,6 @@ export default function LocationScreen() {
         return;
       }
       
-      // Update the requests info state
       setRequestsInfo({
         remaining: result.remaining,
         resetTime: result.resetTime
@@ -194,7 +180,6 @@ export default function LocationScreen() {
       setSendingToAPI(true);
       setApiSendSuccess(false);
       
-      // Format address for API
       let formattedAddress = "";
       if (address) {
         const addressParts = [];
@@ -208,10 +193,8 @@ export default function LocationScreen() {
         formattedAddress = addressParts.join(", ");
       }
 
-      // Create Google Maps link
       const googleMapsUrl = `https://www.google.com/maps?q=${location.coords.latitude},${location.coords.longitude}`;
       
-      // Prepare data for API according to required schema
       const locationData = {
         username: user.username,
         latitude: location.coords.latitude,
@@ -235,14 +218,11 @@ export default function LocationScreen() {
         shared_via: "Mobile App"
       };
       
-      // Send to API
       const response = await sendLocation(locationData);
       
-      // Handle success
       console.log('Location saved successfully:', response);
       setApiSendSuccess(true);
       
-      // Show success message to user
       Alert.alert(
         'Location Saved', 
         `Your location has been successfully saved to the server. You have ${result.remaining} updates remaining today.`,
@@ -252,14 +232,12 @@ export default function LocationScreen() {
     } catch (error) {
       console.error('Error sending location to API:', error);
       
-      // Show error message to user
       Alert.alert(
         'Error', 
         `Failed to save your location: ${error.message}`,
         [{ text: 'OK' }]
       );
       
-      // Refresh request count in case of error
       const info = await getLocationRequestsInfo();
       setRequestsInfo(info);
     } finally {
@@ -285,57 +263,16 @@ export default function LocationScreen() {
         <Button 
           onPress={refreshLocation} 
           variant="solid" 
-          className="bg-orange-500"
+          className="bg-orange-500 rounded-full h-14 w-14 items-center justify-center"
           size="lg"
         >
-          <ButtonIcon as={RefreshCw} className="mr-2 text-white" />
-          <ButtonText>Try Again</ButtonText>
+          <ButtonIcon as={RefreshCw} color="#fff" />
         </Button>
       </Box>
     );
   } else if (location) {
     locationContent = (
       <VStack space="lg" className="p-4">
-        <Card className="bg-white rounded-2xl p-6 mb-2">
-          <VStack space="md">
-            <HStack className="items-center mb-2">
-              <Box className="bg-orange-400 p-2 rounded-lg mr-3">
-                <MapPin size={24} color="#fff" />
-              </Box>
-              <Heading size="md">Current Location</Heading>
-            </HStack>
-            
-            <VStack space="xs">
-              <HStack className="justify-between">
-                <Text className="text-gray-500">Latitude:</Text>
-                <Text className="font-medium">{location.coords.latitude.toFixed(6)}</Text>
-              </HStack>
-              
-              <HStack className="justify-between">
-                <Text className="text-gray-500">Longitude:</Text>
-                <Text className="font-medium">{location.coords.longitude.toFixed(6)}</Text>
-              </HStack>
-              
-              <HStack className="justify-between">
-                <Text className="text-gray-500">Altitude:</Text>
-                <Text className="font-medium">
-                  {location.coords.altitude ? `${location.coords.altitude.toFixed(2)} meters` : 'Not available'}
-                </Text>
-              </HStack>
-              
-              <HStack className="justify-between">
-                <Text className="text-gray-500">Accuracy:</Text>
-                <Text className="font-medium">{location.coords.accuracy.toFixed(2)} meters</Text>
-              </HStack>
-              
-              <HStack className="justify-between">
-                <Text className="text-gray-500">Last Updated:</Text>
-                <Text className="font-medium">{new Date(location.timestamp).toLocaleTimeString()}</Text>
-              </HStack>
-            </VStack>
-          </VStack>
-        </Card>
-
         {address && (
           <Card className="bg-white rounded-2xl p-6">
             <VStack space="md">
@@ -400,40 +337,32 @@ export default function LocationScreen() {
           </Card>
         )}
         
-        {/* Sharing and Refresh Buttons */}
         <HStack space="md" className="justify-center mt-2">
           <Button 
             onPress={refreshLocation} 
             variant="solid" 
-            className="bg-orange-500 flex-1"
-            size="lg"
+            className="bg-orange-500 rounded-full h-14 w-14 items-center justify-center shadow-md"
           >
-            <ButtonIcon as={RefreshCw} className="mr-2 text-white" />
-            <ButtonText>Refresh</ButtonText>
+            <ButtonIcon as={RefreshCw} color="#fff" />
           </Button>
           
           <Button 
             onPress={shareToWhatsApp} 
             variant="solid" 
-            className="bg-green-600 flex-1"
-            size="lg"
+            className="bg-green-600 rounded-full h-14 w-14 items-center justify-center shadow-md"
           >
-            <ButtonIcon as={Share2} className="mr-2 text-white" />
-            <ButtonText>WhatsApp</ButtonText>
+            <ButtonIcon as={Share2} color="#fff" />
+          </Button>
+
+          <Button 
+            onPress={shareLocation} 
+            variant="outline" 
+            className="border-gray-300 rounded-full h-14 w-14 items-center justify-center shadow-sm"
+          >
+            <ButtonIcon as={Share2} className="text-gray-700" />
           </Button>
         </HStack>
-        
-        <Button 
-          onPress={shareLocation} 
-          variant="outline" 
-          className="border-gray-300"
-          size="lg"
-        >
-          <ButtonIcon as={Share2} className="mr-2 text-gray-700" />
-          <ButtonText className="text-gray-700">Share via Other Apps</ButtonText>
-        </Button>
 
-        {/* Send Location to API with Daily Limit Info */}
         <Card className="bg-white rounded-2xl p-5 mt-4">
           <VStack space="sm">
             <HStack className="items-center mb-2">
@@ -467,30 +396,6 @@ export default function LocationScreen() {
                 </Text>
               </HStack>
             )}
-            
-            <Button 
-              onPress={sendLocationToAPI} 
-              variant="solid" 
-              className={requestsInfo.remaining > 0 ? "bg-blue-600" : "bg-gray-400"}
-              size="lg"
-              disabled={sendingToAPI || requestsInfo.remaining <= 0}
-            >
-              {sendingToAPI ? (
-                <HStack space="sm" className="items-center">
-                  <ActivityIndicator size="small" color="white" />
-                  <ButtonText>Sending...</ButtonText>
-                </HStack>
-              ) : (
-                <>
-                  <ButtonIcon as={Upload} className="mr-2 text-white" />
-                  <ButtonText>
-                    {requestsInfo.remaining > 0 ? 
-                      `Send Location (${requestsInfo.remaining} remaining)` : 
-                      "Daily Limit Reached"}
-                  </ButtonText>
-                </>
-              )}
-            </Button>
           </VStack>
         </Card>
       </VStack>
@@ -504,17 +409,96 @@ export default function LocationScreen() {
           entering={FadeInDown.duration(500).springify()}
           className="p-4"
         >
-          <VStack space="md" className="items-center mb-6">
-            <MapPin size={60} color="#f97316" />
-            <Heading size="xl" className="text-center">Your Location</Heading>
-            <Text className="text-gray-500 text-center px-6">
-              View your current geographical location and address information
-            </Text>
-          </VStack>
+          <HStack space="md" className="items-center mb-6 bg-white p-4 rounded-2xl shadow-sm">
+            <Box className={`p-3 rounded-full ${
+              errorMsg ? 'bg-red-100' : 
+              loading ? 'bg-amber-100' : 
+              'bg-green-100'
+            }`}>
+              <MapPin size={32} color={
+                errorMsg ? '#ef4444' : 
+                loading ? '#f59e0b' : 
+                '#10b981'
+              } />
+            </Box>
+            <VStack space="xs" flex={1}>
+              <Heading size="md">Your Location</Heading>
+              <Text className="text-gray-500">
+                {errorMsg ? 'Unable to fetch location' : 
+                loading ? 'Fetching your location...' : 
+                'Location successfully retrieved'}
+              </Text>
+              {!loading && !errorMsg && address && (
+                <Text className="text-xs text-gray-500" numberOfLines={1}>
+                  {address.city || address.district}, {address.country}
+                </Text>
+              )}
+            </VStack>
+            {!loading && !errorMsg && (
+              <Box className="bg-green-100 p-2 rounded-full">
+                <CheckCircle size={18} color="#10b981" />
+              </Box>
+            )}
+          </HStack>
+          
+          <Card className="mb-6 bg-gradient-to-r from-orange-500 to-orange-600 p-5 rounded-2xl shadow-md">
+            <HStack space="md" alignItems="center" justifyContent="space-between">
+              <VStack space="xs">
+                <Text className="text-white text-xs opacity-80">STATUS</Text>
+                <Text className="text-white font-bold text-lg">
+                  {loading ? "Locating..." : 
+                   errorMsg ? "Error" : 
+                   "Location Found"}
+                </Text>
+              </VStack>
+              <HStack space="xs" alignItems="center">
+                <Box className={`h-2.5 w-2.5 rounded-full ${
+                  loading ? "bg-white opacity-50" : 
+                  errorMsg ? "bg-red-300" : 
+                  "bg-green-300"
+                }`} />
+                <Text className="text-white">
+                  {loading ? "Please wait" : 
+                   errorMsg ? "Try again" : 
+                   "GPS Active"}
+                </Text>
+              </HStack>
+            </HStack>
+          </Card>
           
           {locationContent}
         </Animated.View>
       </ScrollView>
+
+      {!loading && !errorMsg && location && (
+        <Box className="absolute bottom-6 right-6">
+          <Box className="relative">
+            <Button 
+              size="lg"
+              className={`${requestsInfo.remaining > 0 ? "bg-blue-600" : "bg-gray-400"} h-16 w-16 rounded-full items-center justify-center shadow-lg`}
+              onPress={sendLocationToAPI}
+              disabled={sendingToAPI || requestsInfo.remaining <= 0}
+            >
+              {sendingToAPI ? (
+                <ActivityIndicator size="small" color="white" />
+              ) : (
+                <Send size={24} color="#fff" />
+              )}
+            </Button>
+            
+            {requestsInfo.remaining > 0 && (
+              <Badge 
+                className="absolute -top-4 -left-4 bg-orange-500 rounded-full min-w-[10px] min-h-[10px] items-center justify-center border-2 border-white z-10 flex"
+                size="xs"
+              >
+                <BadgeText className="text-[5px] font-bold text-white text-center leading-none">
+                  {requestsInfo.remaining}
+                </BadgeText>
+              </Badge>
+            )}
+          </Box>
+        </Box>
+      )}
     </SafeAreaView>
   );
 }

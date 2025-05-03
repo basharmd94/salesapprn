@@ -260,8 +260,8 @@ const DrawerMenu = ({ isVisible, onClose }) => {
               icon={Users} 
               title="Customer Profiles" 
               description="View and manage customers" 
-              onPress={() => navigateTo('/customer-profiles')} 
-              isActive={activeRoute === '/customer-profiles'}
+              onPress={() => navigateTo('/customer-profile')} 
+              isActive={activeRoute === '/customer-profile'}
             />
             <Divider className="bg-gray-100" />
             <MenuItem 

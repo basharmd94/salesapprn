@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef, memo } from 'react';
 import { View, FlatList, TouchableOpacity, Keyboard, ActivityIndicator } from 'react-native';
 import { Input, InputField, InputIcon, InputSlot } from '@/components/ui/input';
-import { ChevronDown, Search, X, ShoppingCart, CreditCard, ShoppingBasket } from 'lucide-react-native';
+import { ChevronDown, Search, X, ShoppingCart, CreditCard } from 'lucide-react-native';
 import { Spinner } from '@/components/ui/spinner';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing } from 'react-native-reanimated';
 import {
@@ -19,51 +19,91 @@ import { Box } from '@/components/ui/box';
 import { debounce } from 'lodash';
 
 // Memoize ItemCard to prevent unnecessary re-renders
-const ItemCard = memo(({ item, onSelect }) => (
-  <TouchableOpacity
-    onPress={onSelect}
-    activeOpacity={0.7}
-    className="mx-4 my-2"
-  >
-    <View className="bg-white rounded-2xl border border-gray-200 shadow-lg p-4">
-      <View className="flex-row items-center">
-        <View className="bg-warning-50 p-3 rounded-xl mr-3">
-          <ShoppingCart size={20} className="text-warning-500" />
-        </View>
-        <View className="flex-1">
-          <Text className="text-lg font-semibold text-gray-900" numberOfLines={1} ellipsizeMode="tail">
-            {item.item_name}
-          </Text>
-          <View className="flex-row justify-between items-center mt-1">
-            <Text className="text-sm text-gray-600">
-              ID: {item.item_id}
+const ItemCard = memo(({ item, onSelect }) => {
+  // Get stock level information based on quantity
+  const getStockLevel = (stockQty) => {
+    if (stockQty === 0) {
+      return {
+        level: 'No Stock',
+        description: 'Out of stock',
+        color: '#ef4444', // red-500
+        textColor: 'text-red-500'
+      };
+    } else if (stockQty >= 1 && stockQty <= 10) {
+      return {
+        level: 'Low Stock',
+        description: 'Urgent restock needed',
+        color: '#f59e0b', // amber-500
+        textColor: 'text-amber-500'
+      };
+    } else if (stockQty >= 11 && stockQty <= 30) {
+      return {
+        level: 'Medium Stock',
+        description: 'Consider reordering soon',
+        color: '#3b82f6', // blue-500
+        textColor: 'text-blue-500'
+      };
+    } else {
+      return {
+        level: 'Full Stock',
+        description: 'Well stocked',
+        color: '#10b981', // green-500
+        textColor: 'text-green-600'
+      };
+    }
+  };
+
+  const stockInfo = getStockLevel(item.stock);
+
+  return (
+    <TouchableOpacity
+      onPress={onSelect}
+      activeOpacity={0.7}
+      className="mx-4 my-2"
+    >
+      <View className="bg-white rounded-2xl border border-gray-200 shadow-lg p-4">
+        <View className="flex-row items-center">
+          <View className="bg-warning-50 p-3 rounded-xl mr-3">
+            <ShoppingCart size={20} className="text-warning-500" />
+          </View>
+          <View className="flex-1">
+            <Text className="text-lg font-semibold text-gray-900" numberOfLines={1} ellipsizeMode="tail">
+              {item.item_name}
             </Text>
-            <Text className="text-sm text-green-600 font-medium">
-              Discount: {item.min_disc_qty || 'N/A'} / ৳{item.disc_amt || 'N/A'}
+            <View className="flex-row justify-between items-center mt-1">
+              <Text className="text-sm text-gray-600">
+                ID: {item.item_id}
+              </Text>
+              <Text className="text-sm text-green-600 font-medium">
+                Discount: {item.min_disc_qty || 'N/A'} / ৳{item.disc_amt || 'N/A'}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View className="h-px bg-gray-200 my-3" />
+
+        <View className="flex-row justify-between mt-1">
+          <View className="bg-gray-50 rounded-lg p-2 flex-1 mr-2">
+            <View className="flex-row items-center">
+              <View style={{ backgroundColor: stockInfo.color }} className="w-3 h-3 rounded-full mr-2" />
+              <View>
+                <Text className={`${stockInfo.textColor} font-medium`}>{stockInfo.level}</Text>
+                <Text className="text-xs text-gray-500">{stockInfo.description}</Text>
+              </View>
+            </View>
+          </View>
+          <View className="flex-row items-center flex-1">
+            <CreditCard size={16} color="#666666" />
+            <Text className="ml-2 text-sm text-gray-600" numberOfLines={1} ellipsizeMode="tail">
+              Price: ৳{item.std_price || 'Not available'}
             </Text>
           </View>
         </View>
       </View>
-
-      <View className="h-px bg-gray-200 my-3" />
-
-      <View className="flex-row justify-between mt-1">
-        <View className="flex-row items-center flex-1">
-          <ShoppingBasket size={16} color="#666666" />
-          <Text className="ml-2 text-sm text-gray-600" numberOfLines={1} ellipsizeMode="tail">
-            Stock: {item.stock || 'No stock info'}
-          </Text>
-        </View>
-        <View className="flex-row items-center flex-1">
-          <CreditCard size={16} color="#666666" />
-          <Text className="ml-2 text-sm text-gray-600" numberOfLines={1} ellipsizeMode="tail">
-            Price: ৳{item.std_price || 'Not available'}
-          </Text>
-        </View>
-      </View>
-    </View>
-  </TouchableOpacity>
-));
+    </TouchableOpacity>
+  );
+});
 
 export default function ItemSelector({
   zid,
