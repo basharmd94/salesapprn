@@ -268,7 +268,7 @@ const DrawerMenu = ({ isVisible, onClose }) => {
               icon={CreditCard} 
               title="Customer Balance" 
               description="Check customer balances" 
-              onPress={() => navigateTo('/customer-balance')} 
+              // onPress={() => navigateTo('/customer-balance')} 
               isActive={activeRoute === '/customer-balance'}
               badge="3"
             />

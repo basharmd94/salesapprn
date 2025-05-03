@@ -65,22 +65,22 @@ export default function ScreensLayout() {
           animation: "slide_from_right"
         }} 
       />
-      <Stack.Screen 
+      {/* <Stack.Screen 
         name="customer-analysis" 
         options={{ 
           title: "Customer Analysis",
           headerBackTitleVisible: false,
           animation: "slide_from_right"
         }} 
-      />
-      <Stack.Screen 
+      /> */}
+      {/* <Stack.Screen 
         name="customer-balance-details" 
         options={{ 
           title: "Balance Details",
           headerBackTitleVisible: false,
           animation: "slide_from_right"
         }} 
-      />
+      /> */}
     </Stack>
   );
 }

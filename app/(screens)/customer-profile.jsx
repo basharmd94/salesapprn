@@ -242,7 +242,7 @@ export default function CustomerProfileScreen() {
             />
           </Animated.View>
         )}
-        keyExtractor={(item) => `${item.zid}-${item.xcus}`}
+        keyExtractor={(item, index) => `customer-${item.zid || '0'}-${item.xcus || ''}-${index}`}
         contentContainerStyle={{ paddingBottom: 80 }} // Add padding to bottom for FAB
         ListFooterComponent={renderFooter}
         ListEmptyComponent={renderEmptyComponent}

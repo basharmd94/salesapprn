@@ -6,6 +6,7 @@ import { VStack } from "@/components/ui/vstack";
 import { Card } from "@/components/ui/card";
 import { User, MapPin, Phone, Tag, Building, Briefcase } from 'lucide-react-native';
 import Animated, { FadeInRight } from 'react-native-reanimated';
+import { TouchableOpacity, Linking, Alert } from 'react-native';
 
 /**
  * Reusable CustomerCard component for displaying customer information
@@ -20,6 +21,31 @@ const CustomerCard = ({
   animation = 'fadeInRight',
 }) => {
   const AnimationComponent = animation === 'fadeInRight' ? FadeInRight : FadeInRight;
+
+  const handlePhonePress = (phoneNumber) => {
+    // Handle phone number formatting - remove any non-numeric characters
+    const formattedPhone = phoneNumber.replace(/\D/g, '');
+    
+    // Format the URL for dialing
+    const phoneUrl = `tel:${formattedPhone}`;
+    
+    // Try to open the dialpad with the phone number
+    Linking.canOpenURL(phoneUrl)
+      .then((supported) => {
+        if (supported) {
+          return Linking.openURL(phoneUrl);
+        } else {
+          Alert.alert(
+            "Phone not supported",
+            "Your device doesn't support making phone calls."
+          );
+        }
+      })
+      .catch((err) => {
+        console.error('Error opening dialpad:', err);
+        Alert.alert("Error", "Could not open phone dialpad.");
+      });
+  };
 
   return (
     <Animated.View entering={AnimationComponent.duration(300).springify()}>
@@ -47,12 +73,17 @@ const CustomerCard = ({
           
           <HStack space="sm" flexWrap="wrap">
             {customer.xmobile && (
-              <Box className="bg-indigo-50 px-3 py-1.5 rounded-lg mr-2 mb-2">
-                <HStack space="xs" alignItems="center">
-                  <Phone size={14} color="#4f46e5" />
-                  <Text className="text-indigo-700 text-xs">{customer.xmobile}</Text>
-                </HStack>
-              </Box>
+              <TouchableOpacity 
+                onPress={() => handlePhonePress(customer.xmobile)}
+                activeOpacity={0.7}
+              >
+                <Box className="bg-indigo-50 px-3 py-1.5 rounded-lg mr-2 mb-2 active:bg-indigo-100">
+                  <HStack space="xs" alignItems="center">
+                    <Phone size={14} color="#4f46e5" />
+                    <Text className="text-indigo-700 text-xs">{customer.xmobile}</Text>
+                  </HStack>
+                </Box>
+              </TouchableOpacity>
             )}
             
             {customer.xcity && (
