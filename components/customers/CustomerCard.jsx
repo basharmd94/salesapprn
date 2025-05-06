@@ -115,7 +115,7 @@ const CustomerCard = ({
           </HStack>
         </View>
         
-        {customer.xsp && (
+        {/* {customer.xsp && (
           <View className="px-4 py-2 bg-amber-50 border-t border-amber-100">
             <HStack space="xs" alignItems="center">
               <Tag size={14} color="#b45309" />
@@ -124,7 +124,7 @@ const CustomerCard = ({
               <ChevronRight size={14} color="#b45309" />
             </HStack>
           </View>
-        )}
+        )} */}
       </Card>
     </Animated.View>
   );

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
   SafeAreaView, 
-  StyleSheet, 
   ActivityIndicator, 
   FlatList,
   View,
@@ -10,75 +9,70 @@ import {
   Pressable,
   TouchableOpacity,
   Text,
-  TextInput
+  TextInput,
+  Alert,
+  ScrollView
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ArrowLeft, MessageSquare, Star, User, Calendar, Send, Phone, BarChart } from 'lucide-react-native';
+import { ArrowLeft, MessageSquare, User, Calendar, Send, Phone, BarChart, CheckSquare, Square } from 'lucide-react-native';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { useAuth } from '@/context/AuthContext';
-
-// Sample feedback data - in a real app, this would come from an API or database
-const sampleFeedbacks = [
-  {
-    id: 1,
-    customerId: 'C001',
-    text: 'Very satisfied with the service. The delivery was prompt and the product quality exceeded expectations.',
-    rating: 5,
-    date: '2025-04-30',
-    agent: 'Ahmed Ali'
-  },
-  {
-    id: 2, 
-    customerId: 'C001',
-    text: 'The product was good but delivery took longer than expected.',
-    rating: 3,
-    date: '2025-04-15',
-    agent: 'Sara Khan'
-  }
-];
-
-// Pure React Native Star Rating component
-const StarRating = ({ rating, onRatingChange, editable = false }) => {
-  return (
-    <View style={styles.starContainer}>
-      {[1, 2, 3, 4, 5].map((star) => (
-        <Pressable 
-          key={star} 
-          onPress={() => editable && onRatingChange(star)}
-          disabled={!editable}
-          style={styles.starButton}
-        >
-          <Star 
-            size={20} 
-            color={star <= rating ? '#f59e0b' : '#d1d5db'} 
-            fill={star <= rating ? '#f59e0b' : 'none'} 
-          />
-        </Pressable>
-      ))}
-    </View>
-  );
-};
+import { createFeedback, getCustomerFeedback } from '@/lib/api_feedback';
 
 // Pure React Native Feedback Item component
 const FeedbackItem = ({ feedback }) => {
   return (
     <Animated.View entering={FadeIn.delay(200).duration(400)}>
-      <View style={styles.feedbackItem}>
-        <View style={styles.feedbackHeader}>
-          <StarRating rating={feedback.rating} />
-          <Text style={styles.dateText}>{feedback.date}</Text>
+      <View className="border border-gray-200 rounded-lg p-3 mb-3">
+        <View className="flex-row justify-between items-center mb-2">
+          <Text className="text-xs text-gray-500">{feedback.date || feedback.created_at}</Text>
         </View>
         
-        <Text style={styles.feedbackText}>{feedback.text}</Text>
+        <Text className="text-sm text-gray-900 mb-2">{feedback.description}</Text>
         
-        <View style={styles.divider} />
+        {feedback.product_id && (
+          <Text className="text-xs text-gray-600 mb-2">Product ID: {feedback.product_id}</Text>
+        )}
         
-        <View style={styles.agentRow}>
+        <View className="flex-row flex-wrap mb-2">
+          {feedback.is_collection_issue && (
+            <View className="bg-red-100 px-2 py-1 rounded mr-2 mb-1">
+              <Text className="text-xs text-red-800">Collection Issue</Text>
+            </View>
+          )}
+          
+          {feedback.is_delivery_issue && (
+            <View className="bg-red-100 px-2 py-1 rounded mr-2 mb-1">
+              <Text className="text-xs text-red-800">Delivery Issue</Text>
+            </View>
+          )}
+        </View>
+        
+        <View className="h-px bg-gray-200 my-2" />
+        
+        <View className="flex-row items-center">
           <User size={14} color="#6b7280" />
-          <Text style={styles.agentText}>Recorded by: {feedback.agent}</Text>
+          <Text className="text-xs text-gray-500 ml-1">Recorded by: {feedback.user_id}</Text>
         </View>
       </View>
     </Animated.View>
+  );
+};
+
+// Checkbox component
+const Checkbox = ({ label, value, onValueChange }) => {
+  return (
+    <TouchableOpacity
+      className="flex-row items-center"
+      onPress={() => onValueChange(!value)}
+    >
+      {value ? (
+        <CheckSquare size={24} color="#3b82f6" />
+      ) : (
+        <Square size={24} color="#6b7280" />
+      )}
+      <Text className="ml-2 text-sm text-gray-700">{label}</Text>
+    </TouchableOpacity>
   );
 };
 
@@ -94,367 +88,189 @@ export default function CustomerFeedbackScreen() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [feedbackText, setFeedbackText] = useState('');
-  const [rating, setRating] = useState(0);
+  const [productId, setProductId] = useState('');
+  const [isCollectionIssue, setIsCollectionIssue] = useState(false);
+  const [isDeliveryIssue, setIsDeliveryIssue] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Fetch feedback data (using sample data for now)
+  // Fetch feedback data from API
   useEffect(() => {
-    setLoading(true);
-    // In a real app, you would fetch feedback data from your API or database
-    setTimeout(() => {
-      setFeedbacks(sampleFeedbacks);
-      setLoading(false);
-    }, 1000);
+    fetchFeedback();
   }, [xcus, zid]);
 
+  const fetchFeedback = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getCustomerFeedback(xcus, Number(zid));
+      // API returns array or object; adjust accordingly
+      setFeedbacks(Array.isArray(data) ? data : data.feedbacks || []);
+    } catch (err) {
+      console.error('Error fetching feedback:', err);
+      setError('Failed to load feedback data. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Submit feedback
-  const handleSubmitFeedback = () => {
-    if (!feedbackText.trim() || rating === 0) return;
+  const handleSubmitFeedback = async () => {
+    if (!feedbackText.trim()) {
+      Alert.alert('Validation Error', 'Please provide feedback description');
+      return;
+    }
     
     setSubmitting(true);
+    setError(null);
     
-    // In a real app, you would submit to your API
-    setTimeout(() => {
-      const newFeedback = {
-        id: Date.now(),
-        customerId: xcus,
-        text: feedbackText,
-        rating: rating,
-        date: new Date().toISOString().split('T')[0],
-        agent: user?.employee_name || 'Anonymous'
+    try {
+      const feedbackData = {
+        zid: Number(zid),
+        customer_id: xcus,
+        product_id: productId.trim(),
+        is_delivery_issue: isDeliveryIssue,
+        is_collection_issue: isCollectionIssue,
+        description: feedbackText,
+        user_id: user?.id || user?.employee_id || ''
       };
       
-      setFeedbacks(prev => [newFeedback, ...prev]);
+      const created = await createFeedback(feedbackData);
+      setFeedbacks(prev => [created, ...prev]);
       setFeedbackText('');
-      setRating(0);
+      setProductId('');
+      setIsCollectionIssue(false);
+      setIsDeliveryIssue(false);
+    } catch (error) {
+      console.error('Feedback submission error:', error);
+      setError('Failed to submit feedback. Please try again.');
+    } finally {
       setSubmitting(false);
-    }, 1000);
+    }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className="flex-1 bg-gray-100">
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+      <View className="flex-row items-center p-4 bg-white border-b border-gray-200">
+        <TouchableOpacity onPress={() => router.back()} className="mr-4">
           <ArrowLeft size={24} color="#374151" />
         </TouchableOpacity>
-        <View style={styles.headerInfo}>
-          <Text style={styles.headerTitle}>Customer Feedback</Text>
-          <Text style={styles.headerSubtitle} numberOfLines={1}>
+        <View className="flex-1">
+          <Text className="text-lg font-semibold text-gray-900">Customer Feedback</Text>
+          <Text className="text-sm text-gray-600 mt-0.5" numberOfLines={1}>
             {xorg} (ID: {xcus})
           </Text>
-          <Text style={styles.phoneNumber}>{xmobile}</Text>
+          <Text className="text-xs text-gray-500 mt-0.5">{xmobile}</Text>
         </View>
       </View>
       
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardAvoid}
+        className="flex-1"
       >
         <Animated.ScrollView 
           entering={FadeInDown.duration(300)}
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
+          className="flex-1"
+          contentContainerStyle={{ paddingBottom: 40 }}
         >
           {/* Action Icons */}
-          <View style={styles.actionIcons}>
-            <TouchableOpacity style={styles.actionIconButton}>
+          <View className="flex-row justify-around py-4 bg-white mx-4 mt-4 rounded-xl shadow-sm">
+            <TouchableOpacity className="items-center p-2">
               <Phone size={24} color="#4f46e5" />
-              <Text style={styles.actionIconText}>Call</Text>
+              <Text className="mt-1 text-xs text-gray-600">Call</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.actionIconButton}>
+            <TouchableOpacity className="items-center p-2">
               <BarChart size={24} color="#8b5cf6" />
-              <Text style={styles.actionIconText}>Analysis</Text>
+              <Text className="mt-1 text-xs text-gray-600">Analysis</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.actionIconButton}>
+            <TouchableOpacity className="items-center p-2">
               <MessageSquare size={24} color="#0ea5e9" />
-              <Text style={styles.actionIconText}>Feedback</Text>
+              <Text className="mt-1 text-xs text-gray-600">Feedback</Text>
             </TouchableOpacity>
           </View>
           
           {/* Feedback Form */}
-          <View style={styles.formCard}>
-            <View style={styles.formHeader}>
+          <View className="bg-white m-4 rounded-xl p-4 shadow-sm">
+            <View className="flex-row items-center mb-4">
               <MessageSquare size={18} color="#6b7280" />
-              <Text style={styles.formTitle}>Add New Feedback</Text>
+              <Text className="text-base font-semibold text-gray-900 ml-2">Add New Feedback</Text>
             </View>
-            
-            <View style={styles.ratingRow}>
-              <Text style={styles.ratingLabel}>Rating:</Text>
-              <StarRating 
-                rating={rating} 
-                onRatingChange={setRating} 
-                editable={true} 
+
+            <View className="mb-4">
+              <Text className="text-sm font-medium text-gray-700 mb-1.5">Product ID</Text>
+              <TextInput
+                className="bg-gray-50 border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900"
+                value={productId}
+                onChangeText={setProductId}
+                placeholder="Enter product ID"
+                placeholderTextColor="#9ca3af"
               />
             </View>
             
-            <View style={styles.textAreaContainer}>
+            <View className="flex-row justify-between mb-4">
+              <Checkbox 
+                label="Collection Issue" 
+                value={isCollectionIssue} 
+                onValueChange={setIsCollectionIssue} 
+              />
+              
+              <Checkbox 
+                label="Delivery Issue" 
+                value={isDeliveryIssue} 
+                onValueChange={setIsDeliveryIssue} 
+              />
+            </View>
+            
+            <View className="mb-4">
               <TextInput 
-                style={styles.textArea}
+                className="bg-gray-50 border border_gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 min-h-[100px] max-h-[200px]"
                 placeholder="Enter customer feedback here..."
+                placeholderTextColor="#9ca3af"
+                multiline={true}
+                textAlignVertical="top"
                 value={feedbackText}
                 onChangeText={setFeedbackText}
-                multiline={true}
-                numberOfLines={4}
               />
             </View>
             
             <TouchableOpacity 
-              style={[
-                styles.submitButton,
-                (!feedbackText.trim() || rating === 0 || submitting) && styles.disabledButton
-              ]}
+              className="bg-blue-500 rounded-lg py-3 flex-row justify-center items-center"
               onPress={handleSubmitFeedback}
-              disabled={!feedbackText.trim() || rating === 0 || submitting}
+              disabled={submitting || !feedbackText.trim()}
             >
               {submitting ? (
-                <ActivityIndicator color="white" size="small" />
+                <ActivityIndicator size="small" color="#fff" />
               ) : (
-                <View style={styles.buttonContent}>
-                  <Send color="white" size={18} />
-                  <Text style={styles.buttonText}>Submit Feedback</Text>
-                </View>
+                <>
+                  <Send size={16} color="#fff" />
+                  <Text className="text-white font-semibold ml-2">Submit Feedback</Text>
+                </>
               )}
             </TouchableOpacity>
+            
+            {error && <Text className="text-red-500 mt-2 text-center">{error}</Text>}
           </View>
           
           {/* Feedback History */}
-          <View style={styles.historyHeader}>
-            <Calendar size={18} color="#6b7280" />
-            <Text style={styles.historyTitle}>Feedback History</Text>
+          <View className="bg-white m-4 mt-0 rounded-xl p-4 shadow-sm">
+            <View className="mb-4">
+              <Text className="text-base font-semibold text-gray-900">Feedback History</Text>
+            </View>
+            
+            {loading ? (
+              <ActivityIndicator size="large" color="#3b82f6" className="py-6" />
+            ) : feedbacks.length > 0 ? (
+              feedbacks.map((feedback, index) => (
+                <FeedbackItem key={feedback.id || index} feedback={feedback} />
+              ))
+            ) : (
+              <Text className="text-center text-gray-500 py-6">No feedback history found</Text>
+            )}
           </View>
-          
-          {loading ? (
-            <View style={styles.loadingContainer}>
-              {[...Array(3)].map((_, index) => (
-                <View key={index} style={styles.skeletonItem} />
-              ))}
-            </View>
-          ) : feedbacks.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <MessageSquare size={40} color="#d1d5db" />
-              <Text style={styles.emptyText}>
-                No feedback recorded yet
-              </Text>
-            </View>
-          ) : (
-            <View>
-              {feedbacks.map((item) => (
-                <FeedbackItem key={item.id} feedback={item} />
-              ))}
-            </View>
-          )}
         </Animated.ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
-  },
-  header: {
-    backgroundColor: 'white',
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  backButton: {
-    padding: 8,
-    marginRight: 12,
-  },
-  headerInfo: {
-    flex: 1,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1f2937',
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#6b7280',
-  },
-  phoneNumber: {
-    fontSize: 14,
-    color: '#4b5563',
-    marginTop: 4,
-  },
-  keyboardAvoid: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 16,
-    paddingBottom: 100,
-  },
-  actionIcons: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 16,
-  },
-  actionIconButton: {
-    alignItems: 'center',
-  },
-  actionIconText: {
-    fontSize: 12,
-    color: '#4b5563',
-    marginTop: 4,
-  },
-  formCard: {
-    backgroundColor: 'white',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 1,
-    borderWidth: 1,
-    borderColor: '#f3f4f6',
-  },
-  formHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  formTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#4b5563',
-    marginLeft: 8,
-  },
-  ratingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  ratingLabel: {
-    fontSize: 14,
-    color: '#4b5563',
-    marginRight: 8,
-  },
-  starContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  starButton: {
-    marginHorizontal: 2,
-  },
-  textAreaContainer: {
-    marginBottom: 16,
-  },
-  textArea: {
-    backgroundColor: '#f9fafb',
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 14,
-    color: '#1f2937',
-    minHeight: 100,
-  },
-  submitButton: {
-    backgroundColor: '#8b5cf6',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  disabledButton: {
-    backgroundColor: '#d1d5db',
-  },
-  buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '500',
-    marginLeft: 8,
-  },
-  historyHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  historyTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#4b5563',
-    marginLeft: 8,
-  },
-  loadingContainer: {
-    marginTop: 8,
-  },
-  skeletonItem: {
-    height: 96,
-    backgroundColor: '#e5e7eb',
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  emptyContainer: {
-    paddingVertical: 24,
-    alignItems: 'center',
-  },
-  emptyText: {
-    marginTop: 8,
-    color: '#9ca3af',
-    textAlign: 'center',
-  },
-  feedbackItem: {
-    backgroundColor: 'white',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 1,
-    borderWidth: 1,
-    borderColor: '#f3f4f6',
-  },
-  feedbackHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  dateText: {
-    fontSize: 12,
-    color: '#6b7280',
-  },
-  feedbackText: {
-    fontSize: 14,
-    color: '#4b5563',
-    marginBottom: 8,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: '#f3f4f6',
-    marginVertical: 8,
-  },
-  agentRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  agentText: {
-    fontSize: 12,
-    color: '#6b7280',
-    marginLeft: 6,
-  },
-});
