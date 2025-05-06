@@ -50,12 +50,25 @@ const MemoizedOrderItem = memo(function OrderItem({ item, itemIndex, onDelete, o
     <Box className="px-4">
       {itemIndex > 0 && <Divider className="my-.2 opacity-10" />}
       <VStack space="sm" className="bg-warning-50 rounded-xl py-3 px-3">
-        <HStack justifyContent="space-between" alignItems="center">
-          <HStack space="sm" alignItems="center" flex={1}>
-            <Package size={18} className="text-warning-600" />
-            <Text className="text-md font-bold text-primary-500 truncate whitespace-nowrap" numberOfLines={1} ellipsizeMode="tail">
-              {`${item.xitem} -- ${item.xdesc}`}
+      <HStack justifyContent="space-between" alignItems="center">
+        <HStack space="sm" alignItems="center" flex={1}>
+          <Package size={18} className="text-warning-600" />
+          <VStack flex={1}>
+            <Text
+              className="text-md font-bold text-primary-500 truncate whitespace-nowrap"
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+             Item Code:  {item.xitem}
             </Text>
+            <Text
+              className="text-md text-primary-500 truncate whitespace-nowrap mt-2"
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {item.xdesc}
+            </Text>
+            </VStack>
           </HStack>
 
           <Button
@@ -129,6 +142,9 @@ const MemoizedOrderCard = memo(function OrderCard({ order, index, onSend, onDele
                 <HStack space="xs" alignItems="center" className="mt-2">
                   <Store size={16} className="text-gray-600" />
                   <Text className="text-base font-semibold text-gray-900">
+                    {order.xcus} -- 
+                  </Text>
+                  <Text className="text-base font-semibold text-gray-900">
                     {order.xcusname.length > 25 ? order.xcusname.substring(0, 25) + "..." : order.xcusname}
                   </Text>
                 </HStack>
@@ -188,7 +204,7 @@ const MemoizedOrderCard = memo(function OrderCard({ order, index, onSend, onDele
               <Box className="bg-white px-4 py-2 rounded-full border border-warning-200">
                 <HStack className="items-center">
                   <CreditCard size={12} className="text-warning-600" /> 
-                  <Text className="text-base font-semibold text-warning-700">
+                  <Text className="text-base font-semibold text-primary-900">
                     ৳{calculateTotal(order.items)}
                   </Text>
                 </HStack>
