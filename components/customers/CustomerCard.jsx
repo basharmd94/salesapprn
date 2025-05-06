@@ -4,9 +4,10 @@ import { Text } from "@/components/ui/text";
 import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
 import { Card } from "@/components/ui/card";
-import { User, MapPin, Phone, Tag, Building, Briefcase } from 'lucide-react-native';
+import { User, MapPin, Phone, Tag, Building, Briefcase, MessageSquare, ChevronRight } from 'lucide-react-native';
 import Animated, { FadeInRight } from 'react-native-reanimated';
-import { TouchableOpacity, Linking, Alert } from 'react-native';
+import { TouchableOpacity, View, StyleSheet, Linking } from 'react-native';
+import { router } from 'expo-router';
 
 /**
  * Reusable CustomerCard component for displaying customer information
@@ -22,103 +23,158 @@ const CustomerCard = ({
 }) => {
   const AnimationComponent = animation === 'fadeInRight' ? FadeInRight : FadeInRight;
 
-  const handlePhonePress = (phoneNumber) => {
-    // Handle phone number formatting - remove any non-numeric characters
-    const formattedPhone = phoneNumber.replace(/\D/g, '');
-    
-    // Format the URL for dialing
-    const phoneUrl = `tel:${formattedPhone}`;
-    
-    // Try to open the dialpad with the phone number
-    Linking.canOpenURL(phoneUrl)
-      .then((supported) => {
-        if (supported) {
-          return Linking.openURL(phoneUrl);
-        } else {
-          Alert.alert(
-            "Phone not supported",
-            "Your device doesn't support making phone calls."
-          );
+  // Handle phone button press - completely standalone function
+  const callPhone = () => {
+    const phoneUrl = `tel:${customer.xmobile}`;
+    Linking.openURL(phoneUrl).catch(err => {
+      console.error("Could not open phone: " + err.message);
+    });
+  };
+
+  // Handle feedback button press - completely standalone function
+  const openFeedback = () => {
+    try {
+      router.push({
+        pathname: "/(screens)/customer-feedback",
+        params: {
+          xcus: customer.xcus,
+          zid: customer.zid,
+          xorg: customer.xorg,
+          xmobile: customer.xmobile,
         }
-      })
-      .catch((err) => {
-        console.error('Error opening dialpad:', err);
-        Alert.alert("Error", "Could not open phone dialpad.");
       });
+    } catch (error) {
+      console.error("Navigation Error", error.message);
+    }
   };
 
   return (
     <Animated.View entering={AnimationComponent.duration(300).springify()}>
       <Card 
-        className="mb-3 p-4 bg-white rounded-xl"
+        className="mb-3 p-0 bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100"
         onPress={onPress}
       >
-        <VStack space="md">
+        {/* Card header with customer info */}
+        <View className="p-4">
           <HStack space="md" alignItems="center">
-            <Box className="bg-gray-100 rounded-lg w-16 h-16 items-center justify-center">
-              <User size={32} color="#6366f1" />
+            <Box className="bg-indigo-50 rounded-full w-16 h-16 items-center justify-center shadow-sm">
+              <User size={28} color="#4f46e5" />
             </Box>
-            <VStack space="xs" flex={1}>
-              <Text className="text-gray-800 font-medium text-lg" numberOfLines={2}>
+            <VStack space="xs" flex={1} className="ml-2">
+              <Text className="text-gray-900 font-semibold text-lg" numberOfLines={2}>
                 {customer.xorg}
               </Text>
-              <HStack space="sm" alignItems="center">
-                <Tag size={14} color="#6b7280" />
-                <Text className="text-gray-500 text-sm">
-                  Customer ID: {customer.xcus}
-                </Text>
-              </HStack>
-            </VStack>
-          </HStack>
-          
-          <HStack space="sm" flexWrap="wrap">
-            {customer.xmobile && (
-              <TouchableOpacity 
-                onPress={() => handlePhonePress(customer.xmobile)}
-                activeOpacity={0.7}
-              >
-                <Box className="bg-indigo-50 px-3 py-1.5 rounded-lg mr-2 mb-2 active:bg-indigo-100">
-                  <HStack space="xs" alignItems="center">
-                    <Phone size={14} color="#4f46e5" />
-                    <Text className="text-indigo-700 text-xs">{customer.xmobile}</Text>
-                  </HStack>
-                </Box>
-              </TouchableOpacity>
-            )}
-            
-            {customer.xcity && (
-              <Box className="bg-emerald-50 px-3 py-1.5 rounded-lg mr-2 mb-2">
-                <HStack space="xs" alignItems="center">
-                  <MapPin size={14} color="#059669" />
-                  <Text className="text-emerald-700 text-xs">
-                    {customer.xcity}{customer.xstate ? `, ${customer.xstate}` : ''}
+              {customer.xmobile && (
+                <HStack space="sm" alignItems="center">
+                  <Phone size={14} color="#6366f1" />
+                  <Text className="text-indigo-600 text-sm font-medium">
+                    {customer.xmobile}
                   </Text>
                 </HStack>
-              </Box>
-            )}
-            
-            {customer.xsp && (
-              <Box className="bg-amber-50 px-3 py-1.5 rounded-lg mb-2">
-                <HStack space="xs" alignItems="center">
-                  <Briefcase size={14} color="#b45309" />
-                  <Text className="text-amber-700 text-xs">SP: {customer.xsp}</Text>
+              )}
+              {customer.xcity && (
+                <HStack space="sm" alignItems="center">
+                  <MapPin size={14} color="#4b5563" />
+                  <Text className="text-gray-600 text-sm" numberOfLines={1}>
+                    {customer.xcity}{customer.xadd1 ? ` — ${customer.xadd1}` : ''}
+                  </Text>
                 </HStack>
-              </Box>
-            )}
+              )}
+            </VStack>
           </HStack>
-          
-          {customer.xadd1 && (
-            <HStack space="xs" alignItems="flex-start">
-              <Building size={16} color="#6b7280" className="mt-0.5" />
-              <Text className="text-gray-600 text-sm flex-1">
-                {customer.xadd1}
-              </Text>
+        </View>
+        
+        {/* Icon buttons row - in a separate card section with gradient background */}
+        <View className="bg-gradient-to-r from-indigo-50 to-purple-50 px-4 py-3 border-t border-gray-100">
+          <HStack justifyContent="space-around">
+            <TouchableOpacity 
+              style={styles.actionButton}
+              className="bg-white"
+              onPress={callPhone}
+            >
+              <Phone size={18} color="#4f46e5" />
+              <Text className="text-indigo-700 text-xs font-medium ml-2">Call</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.actionButton}
+              className="bg-white"
+            >
+              <Briefcase size={18} color="#8b5cf6" />
+              <Text className="text-purple-700 text-xs font-medium ml-2">Analysis</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.actionButton}
+              className="bg-white"
+              onPress={openFeedback}
+            >
+              <MessageSquare size={18} color="#0ea5e9" />
+              <Text className="text-sky-700 text-xs font-medium ml-2">Feedback</Text>
+            </TouchableOpacity>
+          </HStack>
+        </View>
+        
+        {customer.xsp && (
+          <View className="px-4 py-2 bg-amber-50 border-t border-amber-100">
+            <HStack space="xs" alignItems="center">
+              <Tag size={14} color="#b45309" />
+              <Text className="text-amber-800 text-xs font-medium">SP: {customer.xsp}</Text>
+              <View style={{flex: 1}} />
+              <ChevronRight size={14} color="#b45309" />
             </HStack>
-          )}
-        </VStack>
+          </View>
+        )}
       </Card>
     </Animated.View>
   );
 };
+
+// Pure React Native styles for better control
+const styles = StyleSheet.create({
+  actionRow: {
+    flexDirection: 'row',
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  phoneButton: {
+    backgroundColor: '#eef2ff', // indigo-50
+  },
+  feedbackButton: {
+    backgroundColor: '#f5f3ff', // purple-50
+  },
+  buttonPressed: {
+    opacity: 0.7,
+  },
+  phoneText: {
+    color: '#4f46e5', // indigo-700
+    fontSize: 12,
+    marginLeft: 4,
+  },
+  feedbackText: {
+    color: '#7c3aed', // purple-700
+    fontSize: 12,
+    marginLeft: 4,
+  },
+  iconButtonRow: {
+    marginTop: 8,
+  },
+  iconButton: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: '#f3f4f6', // gray-100
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
 
 export default CustomerCard;

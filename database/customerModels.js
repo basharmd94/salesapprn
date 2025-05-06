@@ -70,7 +70,7 @@ const upsertCustomers = async (customers) => {
   }
 };
 
-const getCustomers = async (zid, searchText, userId, limit = 40, offset = 0) => {
+const getCustomers = async (zid, searchText, userId, limit = 20, offset = 0) => {
   const db = await getDatabase();
   if (!db) throw new Error('Database not initialized');
   

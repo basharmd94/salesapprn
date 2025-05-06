@@ -488,10 +488,10 @@ export default function LocationScreen() {
             
             {requestsInfo.remaining > 0 && (
               <Badge 
-                className="absolute -top-4 -left-4 bg-orange-500 rounded-full min-w-[10px] min-h-[10px] items-center justify-center border-2 border-white z-10 flex"
-                size="xs"
+                className="absolute -top-2 -left-2 bg-orange-500 rounded-full min-w-[24px] min-h-[24px] items-center justify-center border-2 border-white z-10 flex"
+                size="md"
               >
-                <BadgeText className="text-[5px] font-bold text-white text-center leading-none">
+                <BadgeText className="text-[8px] font-bold text-white text-center leading-none">
                   {requestsInfo.remaining}
                 </BadgeText>
               </Badge>

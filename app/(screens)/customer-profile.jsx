@@ -16,7 +16,7 @@ import { ArrowLeft, Search, Users, Filter } from 'lucide-react-native';
 import { COMPANY_ZIDS, COMPANY_NAMES } from '@/lib/api_items';
 import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input";
 import { Button, ButtonText } from "@/components/ui/button";
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
 import { Pressable } from "react-native";
 import { Fab, FabIcon } from "@/components/ui/fab";
 import { useAuth } from '@/context/AuthContext';
@@ -25,7 +25,8 @@ import { getCustomers } from '@/database/customerModels';
 // Import our reusable components
 import CustomerCard from '@/components/customers/CustomerCard';
 import CustomerSkeleton from '@/components/customers/CustomerSkeleton';
-import CompanyFilterDrawer from '@/components/customers/CompanyFilterDrawer';
+// Import the centralized CompanyFilterDrawer instead of the customer-specific one
+import CompanyFilterDrawer from '@/components/common/CompanyFilterDrawer';
 
 export default function CustomerProfileScreen() {
   // Get params from route or use default (HMBR)
@@ -233,7 +234,7 @@ export default function CustomerProfileScreen() {
         data={customers}
         renderItem={({ item }) => (
           <Animated.View 
-            entering={FadeInDown.duration(300).delay(100)}
+            entering={FadeInRight.duration(300).delay(100)}
             className="px-4"
           >
             <CustomerCard 
@@ -270,12 +271,15 @@ export default function CustomerProfileScreen() {
         </Fab>
       </Box>
 
-      {/* Company Filter Drawer */}
+      {/* Company Filter Drawer - Updated to use centralized component with customer-specific props */}
       <CompanyFilterDrawer
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
         onSelectCompany={handleFilterSelect}
         currentZid={zid}
+        title="Select Customer Company"
+        subtitle="Choose a company to view its customers"
+        type="customers"
       />
     </SafeAreaView>
   );

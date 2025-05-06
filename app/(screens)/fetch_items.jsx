@@ -23,7 +23,8 @@ import { Fab, FabIcon } from "@/components/ui/fab";
 // Import our reusable components
 import ItemCard from '@/components/items/ItemCard';
 import ItemSkeleton from '@/components/items/ItemSkeleton';
-import CompanyFilterDrawer from '@/components/items/CompanyFilterDrawer';
+// Import the centralized CompanyFilterDrawer from common folder
+import CompanyFilterDrawer from '@/components/common/CompanyFilterDrawer';
 
 export default function FetchItemsScreen() {
   // Get params from route or use default (HMBR)
@@ -247,6 +248,9 @@ export default function FetchItemsScreen() {
         onClose={() => setIsFilterOpen(false)}
         onSelectCompany={handleFilterSelect}
         currentZid={zid}
+        title="Select Item Company"
+        subtitle="Choose a company to view its inventory"
+        type="items"
       />
     </SafeAreaView>
   );
