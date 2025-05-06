@@ -32,17 +32,17 @@ export default function CartItem({ item, onRemove }) {
         className="p-3 bg-white rounded-lg "
       >
         <VStack space="2" flex={1}>
-          <Text className="text-xs font-bold text-primary-50 italic">
+          <Text className="text-md font-bold text-black italic">
             Code: {item.xitem}
           </Text>
-          <Text className="text-sm font-semibold text-primary-400 mb-2 ">
+          <Text className="text-md font-semibold text-primary-400 mb-2 ">
             {item.xdesc.length > 30 ? item.xdesc.substring(0, 30) + "..." : item.xdesc}
           </Text>
           <HStack space="3" alignItems="center" flexWrap="wrap">
             <Box className="bg-warning-400 px-2.5 py-1 rounded-full">
               <HStack space="1" alignItems="center">
                 <ShoppingCart size={12} color="#1e40af" />
-                <Text className="text-xs font-medium text-primary-800">
+                <Text className="text-md font-medium text-primary-800">
                   Qty: {item.xqty}
                 </Text>
               </HStack>
@@ -51,7 +51,7 @@ export default function CartItem({ item, onRemove }) {
             <Box className="bg-green-50 px-2.5 py-1 rounded-full">
               <HStack space="1" alignItems="center">
                 <DollarSign size={12} color="#166534" />
-                <Text className="text-xs font-medium text-green-800">
+                <Text className="text-md font-medium text-green-800">
                   Unit: ৳{item.xprice}
                 </Text>
               </HStack>
@@ -60,7 +60,7 @@ export default function CartItem({ item, onRemove }) {
             <Box className="bg-purple-50 px-2.5 py-1 rounded-full">
               <HStack space="1" alignItems="center">
                 <Hash size={12} color="#581c87" />
-                <Text className="text-xs font-bold text-purple-900">
+                <Text className="text-md font-bold text-purple-900">
                   Total: ৳{item.xlinetotal}
                 </Text>
               </HStack>
