@@ -33,7 +33,7 @@ const CustomerCard = memo(({ customer, onSelect }) => (
           <Text className="text-lg font-semibold text-gray-900" numberOfLines={1} ellipsizeMode="tail">
             {customer.xorg}
           </Text>
-          <Text className="text-sm text-gray-600 mt-1">
+          <Text className="text-lg font-extrabold  mt-1">
             ID: {customer.xcus}
           </Text>
         </View>

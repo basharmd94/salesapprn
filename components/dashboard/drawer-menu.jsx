@@ -31,7 +31,10 @@ import {
   Bell,
   X,
   DollarSign,
-  ChevronRight
+  ChevronRight,
+  Send,
+  SendHorizonal,
+  SendIcon
 } from 'lucide-react-native';
 import { useAuth } from '@/context/AuthContext';
 import logger from '@/utils/logger';
@@ -273,13 +276,13 @@ const DrawerMenu = ({ isVisible, onClose }) => {
               badge="3"
             />
             <Divider className="bg-gray-100" />
-            <MenuItem 
+            {/* <MenuItem 
               icon={MessageSquare} 
               title="Feedback & Reviews" 
               description="Customer feedback" 
               onPress={() => navigateTo('/customer-feedback')} 
               isActive={activeRoute === '/customer-feedback'}
-            />
+            /> */}
           </CategorySection>
 
           {/* Product Management */}
@@ -288,52 +291,38 @@ const DrawerMenu = ({ isVisible, onClose }) => {
               icon={Package} 
               title="Inventory" 
               description="Stock management" 
-              onPress={() => navigateTo('/item-management')} 
-              isActive={activeRoute === '/item-management'}
-            />
-            <Divider className="bg-gray-100" />
-            <MenuItem 
-              icon={ShoppingCart} 
-              title="Product Catalog" 
-              description="Manage product listings" 
               onPress={() => navigateTo('/fetch_items')} 
               isActive={activeRoute === '/fetch_items'}
             />
             <Divider className="bg-gray-100" />
-            <MenuItem 
-              icon={Search} 
-              title="Product Search" 
-              description="Find products quickly" 
-              onPress={() => navigateTo('/search-products')} 
-              isActive={activeRoute === '/search-products'}
-            />
+
           </CategorySection>
 
           {/* Order Management */}
           <CategorySection title="Order Management" icon={ClipboardList}>
             <MenuItem 
-              icon={ClipboardList} 
-              title="Order History" 
-              description="View all past orders" 
-              onPress={() => navigateTo('/order-history')} 
+              icon={Send} 
+              title="Orders Sent" 
+              description="View all orders sent" 
+              onPress={() => navigateTo('/new-order')} 
               isActive={activeRoute === '/order-history'}
               badge="12"
             />
             <Divider className="bg-gray-100" />
             <MenuItem 
-              icon={DollarSign} 
-              title="Revenue Reports" 
-              description="Financial summary" 
-              onPress={() => navigateTo('/revenue-reports')} 
-              isActive={activeRoute === '/revenue-reports'}
+              icon={ClipboardList}
+              title="Orders Confirmed"
+              description="View all confirmed orders" 
+              onPress={() => navigateTo('/confirm-order')} 
+              isActive={activeRoute === '/confirm-order'}
             />
             <Divider className="bg-gray-100" />
             <MenuItem 
-              icon={Truck} 
-              title="Delivery Tracking" 
-              description="Monitor deliveries" 
-              onPress={() => navigateTo('/location')} 
-              isActive={activeRoute === '/location'}
+              icon={X} 
+              title="Canceled Orders"
+              description="View all canceled orders" 
+              onPress={() => navigateTo('/cancel-order')}
+              isActive={activeRoute === '/cancel-order'} 
             />
           </CategorySection>
 

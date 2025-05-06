@@ -31,7 +31,7 @@ const FeedbackItem = ({ feedback }) => {
         <Text className="text-sm text-gray-900 mb-2">{feedback.description}</Text>
         
         {feedback.product_id && (
-          <Text className="text-xs text-gray-600 mb-2">Product ID: {feedback.product_id}</Text>
+          <Text className="text-xs text-gray-600 mb-2">Product ID or Name: {feedback.product_id}</Text>
         )}
         
         <View className="flex-row flex-wrap mb-2">
@@ -174,22 +174,7 @@ export default function CustomerFeedbackScreen() {
           contentContainerStyle={{ paddingBottom: 40 }}
         >
           {/* Action Icons */}
-          <View className="flex-row justify-around py-4 bg-white mx-4 mt-4 rounded-xl shadow-sm">
-            <TouchableOpacity className="items-center p-2">
-              <Phone size={24} color="#4f46e5" />
-              <Text className="mt-1 text-xs text-gray-600">Call</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity className="items-center p-2">
-              <BarChart size={24} color="#8b5cf6" />
-              <Text className="mt-1 text-xs text-gray-600">Analysis</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity className="items-center p-2">
-              <MessageSquare size={24} color="#0ea5e9" />
-              <Text className="mt-1 text-xs text-gray-600">Feedback</Text>
-            </TouchableOpacity>
-          </View>
+
           
           {/* Feedback Form */}
           <View className="bg-white m-4 rounded-xl p-4 shadow-sm">
@@ -224,19 +209,24 @@ export default function CustomerFeedbackScreen() {
             </View>
             
             <View className="mb-4">
+              <Text className="text-sm font-medium text-gray-700 mb-1">Feedback Description</Text>
               <TextInput 
-                className="bg-gray-50 border border_gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 min-h-[100px] max-h-[200px]"
+                className="bg-gray-50 border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-900 min-h-[150px] max-h-[300px]"
                 placeholder="Enter customer feedback here..."
                 placeholderTextColor="#9ca3af"
                 multiline={true}
                 textAlignVertical="top"
                 value={feedbackText}
                 onChangeText={setFeedbackText}
+                numberOfLines={8}
+                returnKeyType="default"
+                blurOnSubmit={false}
               />
+              <Text className="text-xs text-gray-500 mt-1 text-right">{feedbackText.length} characters</Text>
             </View>
             
             <TouchableOpacity 
-              className="bg-blue-500 rounded-lg py-3 flex-row justify-center items-center"
+              className="bg-orange-500 rounded-lg py-3 flex-row justify-center items-center"
               onPress={handleSubmitFeedback}
               disabled={submitting || !feedbackText.trim()}
             >

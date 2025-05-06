@@ -27,6 +27,37 @@ const ItemCard = ({
 
   const AnimationComponent = animation === 'fadeInRight' ? FadeInRight : FadeInRight;
 
+  // Get stock level information based on quantity
+  const getStockLevel = (stockQty) => {
+    if (stockQty === 0) {
+      return {
+        level: 'No Stock',
+        color: '#ef4444', // red-500
+        textColor: 'text-red-500'
+      };
+    } else if (stockQty >= 1 && stockQty <= 10) {
+      return {
+        level: 'Low Stock',
+        color: '#f59e0b', // amber-500
+        textColor: 'text-amber-500'
+      };
+    } else if (stockQty >= 11 && stockQty <= 30) {
+      return {
+        level: 'Medium Stock',
+        color: '#3b82f6', // blue-500
+        textColor: 'text-blue-500'
+      };
+    } else {
+      return {
+        level: 'Full Stock',
+        color: '#10b981', // green-500
+        textColor: 'text-green-600'
+      };
+    }
+  };
+
+  const stockInfo = getStockLevel(item.stock);
+
   return (
     <Animated.View entering={AnimationComponent.duration(300).springify()}>
       <Card 
@@ -63,7 +94,7 @@ const ItemCard = ({
               </Text>
               <HStack space="sm" alignItems="center">
                 <Tag size={14} color="#6b7280" />
-                <Text className="text-gray-500 text-sm">
+                <Text className="text-orange-500 text-md font-bold">
                   {item.item_id}
                 </Text>
               </HStack>
@@ -81,15 +112,12 @@ const ItemCard = ({
               <Text className="text-gray-500 text-xs">Stock</Text>
               <HStack space="xs" alignItems="center">
                 <Box 
-                  className={`w-2 h-2 rounded-full ${
-                    item.stock <= 5 ? 'bg-red-500' : 
-                    item.stock <= 20 ? 'bg-amber-500' : 'bg-green-500'
-                  }`}
+                  className={`w-2 h-2 rounded-full`}
+                  style={{ backgroundColor: stockInfo.color }}
                 />
-                <Text className={`font-medium ${
-                  item.stock <= 5 ? 'text-red-500' : 
-                  item.stock <= 20 ? 'text-amber-500' : 'text-green-600'
-                }`}>{item.stock}</Text>
+                <Text className={`font-medium ${stockInfo.textColor}`}>
+                  {stockInfo.level}
+                </Text>
               </HStack>
             </VStack>
             

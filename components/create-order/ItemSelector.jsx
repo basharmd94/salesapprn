@@ -71,7 +71,7 @@ const ItemCard = memo(({ item, onSelect }) => {
               {item.item_name}
             </Text>
             <View className="flex-row justify-between items-center mt-1">
-              <Text className="text-sm text-gray-600">
+              <Text className="text-lg text-black-800 font-bold">
                 ID: {item.item_id}
               </Text>
               <Text className="text-sm text-green-600 font-medium">
