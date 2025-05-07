@@ -74,8 +74,8 @@ const ItemCard = memo(({ item, onSelect }) => {
               <Text className="text-lg text-black-800 font-bold">
                 ID: {item.item_id}
               </Text>
-              <Text className="text-sm text-green-600 font-medium">
-                Discount: {item.min_disc_qty || 'N/A'} / ৳{item.disc_amt || 'N/A'}
+              <Text className="text-sm text-warning-500 font-medium">
+                Discount: {item.min_disc_qty || ''} / ৳{item.disc_amt || ''}
               </Text>
             </View>
           </View>
@@ -219,11 +219,11 @@ export default function ItemSelector({
     <VStack space="md">
       <Button
         variant="outline"
-        className="border border-primary-50 rounded-2xl flex-row items-center justify-between"
+        className="border border-primary-50 rounded-2xl flex-row items-center justify-between h-14 mt-2"
         onPress={() => setShowItemSheet(true)}
         disabled={disabled}
       >
-        <ButtonText className="text-primary-200 text-xs">
+        <ButtonText className="text-primary-400 text-lg font-semibold flex-1">
           {itemName || "Select Item"}
         </ButtonText>
         <ButtonIcon as={ChevronDown} className="text-primary-50" />
@@ -254,14 +254,14 @@ export default function ItemSelector({
                 <View className="relative">
                   <Input
                     size="sm"
-                    className="bg-white border border-gray-200 rounded-xl w-full h-10"
+                    className="bg-white border border-gray-200 rounded-xl w-full h-14"
                   >
                     <InputField
                       ref={drawerInputRef}
                       placeholder={`Search items in ZID ${zid}...`}
                       value={localSearchText}
                       onChangeText={handleSearchChange}
-                      className="text-sm"
+                      className="text-xl font-semibold"
                       autoCorrect={false}
                       spellCheck={false}
                       autoCapitalize="none"

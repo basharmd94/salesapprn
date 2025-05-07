@@ -11,21 +11,21 @@ export default function QuantityInput({
 }) {
   return (
     <Box>
-      <Text className="text-primary-100 text-xs pb-2">Quantity</Text>
-      <Input size="md" variant="rounded" className = 'border border'>
+      <Text className="text-primary-800 text-md pb-2">Quantity</Text>
+      <Input size="md" variant="rounded" className = 'border h-14 border-primary-50 rounded-2xl'>
         <InputField
           placeholder="Enter quantity"
           value={quantity}
           onChangeText={setQuantity}
           keyboardType="numeric"
           disabled={disabled}    
-          className = "text-xs"    
+          className = "text-primary-400 text-lg font-semibold flex-1"    
           
           
         />
 
             <InputSlot className="flex justify-center items-center">
-              <Plus className="w-5 h-5 text-gray-500 mr-4" />
+              <Plus className="w-4 h-4 text-gray-500 mr-6" />
             </InputSlot>
             
 

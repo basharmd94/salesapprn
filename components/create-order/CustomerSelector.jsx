@@ -150,17 +150,17 @@ export default function CustomerSelector({
   []);
 
   return (
-    <VStack space="md">
+    <VStack space="lg">
       <Button
         variant="outline"
-        className="border border-primary-50 rounded-2xl flex-row items-center justify-between"
+        className="border border-primary-50 rounded-2xl flex-row items-center justify-between h-14 mt-2"
         onPress={() => setShowCustomerSheet(true)}
         disabled={disabled}
       >
-        <ButtonText className="text-primary-200 text-xs">
+        <ButtonText className="text-primary-400 text-lg font-semibold flex-1 ">
           {customerName || "Select Customer"}
         </ButtonText>
-        <ButtonIcon as={ChevronDown} className="text-primary-50" /> 
+        <ButtonIcon as={ChevronDown} className="text-primary-500" /> 
       </Button>
 
       <Drawer
@@ -173,84 +173,85 @@ export default function CustomerSelector({
         anchor="bottom"
       >
         <DrawerBackdrop />
-        <DrawerContent className="h-full w-full">
-          <DrawerHeader className="bg-white border-b border-gray-100 w-full">
-            <View className="p-4">
-              <Text className="text-xs text-gray-600 uppercase mb-1">Select Customer from</Text>
-              <View className="flex-row justify-between items-center">
-                <Heading size="lg">Business</Heading>
-                <View className="bg-warning-50 px-2 py-1 rounded-lg">
-                  <Text className="text-warning-700 font-semibold">ZID {zid}</Text>
+          <DrawerContent>
+            <DrawerHeader className="bg-white border-b border-gray-100 w-full">
+              <View className="p-4">
+                <Text className="text-xs text-gray-600 uppercase mb-1">Select Customer from</Text>
+                <View className="flex-row justify-between items-center">
+                  <Heading size="lg">Business</Heading>
+                  <View className="bg-warning-50 px-2 py-1 rounded-lg">
+                    <Text className="text-warning-700 font-semibold">ZID {zid}</Text>
+                  </View>
                 </View>
+
+                <Box className="mt-4 w-[280px]" >
+                  <View className="relative">
+                    <Input
+                      size="lg"
+                      className="bg-white border border-gray-200 rounded-xl w-full h-14"
+                    >
+                      <InputField
+                        ref={drawerInputRef}
+                        placeholder={`Search customers...`}
+                        value={localSearchText}
+                        onChangeText={handleSearchChange}
+                        className="text-xl font-semibold"
+                        autoCorrect={false}
+                        spellCheck={false}
+                        autoCapitalize="none"
+                        returnKeyType="search"
+                        
+                      />
+                      <InputSlot px="$3">
+                        {localSearchText ? (
+                          <TouchableOpacity 
+                            onPress={handleClearSearch}
+                            hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
+                          >
+                            <InputIcon as={X} size={18} className="text-gray-400" />
+                          </TouchableOpacity>
+                        ) : (
+                          <InputIcon as={Search} size={18} className="text-gray-400" />
+                        )}
+                      </InputSlot>
+                    </Input>
+                  </View>
+                </Box>
               </View>
+            </DrawerHeader>
 
-              <Box className="mt-4 w-[280px]">
-                <View className="relative">
-                  <Input
-                    size="sm"
-                    className="bg-white border border-gray-200 rounded-xl w-full h-10"
-                  >
-                    <InputField
-                      ref={drawerInputRef}
-                      placeholder={`Search customers in ZID ${zid}...`}
-                      value={localSearchText}
-                      onChangeText={handleSearchChange}
-                      className="text-sm"
-                      autoCorrect={false}
-                      spellCheck={false}
-                      autoCapitalize="none"
-                      returnKeyType="search"
-                    />
-                    <InputSlot px="$3">
-                      {localSearchText ? (
-                        <TouchableOpacity 
-                          onPress={handleClearSearch}
-                          hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
-                        >
-                          <InputIcon as={X} size={18} className="text-gray-400" />
-                        </TouchableOpacity>
-                      ) : (
-                        <InputIcon as={Search} size={18} className="text-gray-400" />
-                      )}
-                    </InputSlot>
-                  </Input>
-                </View>
-              </Box>
+            <View style={{ flex: 1 }} className="bg-gray-100">
+              <FlatList
+                data={customers}
+                renderItem={renderItem}
+                keyExtractor={getItemKey}
+                ListEmptyComponent={
+                  <View className="py-5 items-center">
+                    <Text className="text-gray-600 text-center">
+                      {localSearchText.length < 2
+                        ? "Type at least 2 characters to search"
+                        : loading
+                        ? "Searching..."
+                        : "No customers found"}
+                    </Text>
+                  </View>
+                }
+                removeClippedSubviews={true}
+                initialNumToRender={10}
+                maxToRenderPerBatch={10}
+                updateCellsBatchingPeriod={50}
+                windowSize={11}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="on-drag"
+                style={{ flex: 1 }}
+                contentContainerStyle={{ 
+                  flexGrow: customers.length === 0 ? 1 : undefined,
+                  paddingTop: 8,
+                  paddingBottom: 20 
+                }}
+              />
             </View>
-          </DrawerHeader>
-
-          <View style={{ flex: 1 }} className="bg-gray-100">
-            <FlatList
-              data={customers}
-              renderItem={renderItem}
-              keyExtractor={getItemKey}
-              ListEmptyComponent={
-                <View className="py-5 items-center">
-                  <Text className="text-gray-600 text-center">
-                    {localSearchText.length < 2
-                      ? "Type at least 2 characters to search"
-                      : loading
-                      ? "Searching..."
-                      : "No customers found"}
-                  </Text>
-                </View>
-              }
-              removeClippedSubviews={true}
-              initialNumToRender={10}
-              maxToRenderPerBatch={10}
-              updateCellsBatchingPeriod={50}
-              windowSize={11}
-              keyboardShouldPersistTaps="handled"
-              keyboardDismissMode="on-drag"
-              style={{ flex: 1 }}
-              contentContainerStyle={{ 
-                flexGrow: customers.length === 0 ? 1 : undefined,
-                paddingTop: 8,
-                paddingBottom: 20 
-              }}
-            />
-          </View>
-        </DrawerContent>
+          </DrawerContent>
       </Drawer>
     </VStack>
   );

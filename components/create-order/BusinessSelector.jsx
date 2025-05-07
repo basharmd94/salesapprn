@@ -52,15 +52,15 @@ export default function BusinessSelector({
 
   return (
     <Box>
-      <Text className="text-primary-100 text-xs mb-2">Business zid</Text>
+      <Text className="text-primary-800 text-md pb-2 mt-5">Business zid</Text>
       
       <Button
         variant="outline"
         onPress={() => setShowZidSheet(true)}
         disabled={disabled}
-        className="border border-primary-50 rounded-2xl flex-row items-center justify-between"
+        className="border border-primary-50 rounded-2xl flex-row items-center justify-between h-14 mt-2"
       >
-        <ButtonText className="text-primary-200 text-xs">{zid || "Select ZID"}</ButtonText>
+        <ButtonText className="text-primary-400 text-lg font-semibold flex-1">{zid || "Select ZID"}</ButtonText>
         <ButtonIcon as={ChevronDown} className="text-primary-50" />
       </Button>
 
