@@ -66,8 +66,8 @@ const CompanyFilterDrawer = ({ isOpen, onClose, onSelectCompany, currentZid }) =
             <Box className="flex-row justify-between items-center">
               <Heading size="md">Select Company</Heading>
               <HStack space="md">
-                <Box className="bg-indigo-100 px-2.5 py-1 rounded-lg">
-                  <Building2 size={16} color="#4f46e5" />
+                <Box className="bg-orange-100 px-2.5 py-1 rounded-lg">
+                  <Building2 size={16} color="#f97316" />
                 </Box>
               </HStack>
             </Box>
@@ -92,13 +92,13 @@ const CompanyFilterDrawer = ({ isOpen, onClose, onSelectCompany, currentZid }) =
                   }}
                   activeOpacity={0.7}
                 >
-                  <Box className={`p-4 rounded-2xl ${isSelected ? 'bg-indigo-50 border border-indigo-200' : 'bg-white border border-gray-200'}`}>
+                  <Box className={`p-4 rounded-2xl ${isSelected ? 'bg-orange-50 border border-orange-200' : 'bg-white border border-gray-200'}`}>
                     <HStack space="md" alignItems="center">
                       <Box style={{ backgroundColor: company.color }} className="p-3 rounded-xl">
                         <Icon size={24} color="#fff" />
                       </Box>
                       <VStack>
-                        <Text className={`text-lg font-semibold ${isSelected ? 'text-indigo-700' : 'text-gray-800'}`}>
+                        <Text className={`text-lg font-semibold ${isSelected ? 'text-orange-700' : 'text-gray-800'}`}>
                           {company.name}
                         </Text>
                         <Text className="text-gray-500">
@@ -107,8 +107,8 @@ const CompanyFilterDrawer = ({ isOpen, onClose, onSelectCompany, currentZid }) =
                       </VStack>
                       
                       {isSelected && (
-                        <Box className="ml-auto bg-indigo-100 p-2 rounded-full">
-                          <View className="w-3 h-3 rounded-full bg-indigo-500" />
+                        <Box className="ml-auto bg-orange-100 p-2 rounded-full">
+                          <View className="w-3 h-3 rounded-full bg-orange-500" />
                         </Box>
                       )}
                     </HStack>

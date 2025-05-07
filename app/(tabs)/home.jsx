@@ -11,7 +11,8 @@ import { useAuth } from "@/context/AuthContext";
 import { Heading } from "@/components/ui/heading";
 import { 
   LogOut, Package, Clock, RefreshCw, DollarSign, Plus, List, ChevronRight, 
-  CheckCircle2, XCircle, MessageSquare, Menu, House, ShoppingCart, Truck, User
+  CheckCircle2, XCircle, MessageSquare, Menu, House, ShoppingCart, Truck, User,
+  MapPin, Send
 } from 'lucide-react-native';
 import { Avatar } from "@/components/ui/avatar";
 import { AvatarFallbackText } from "@/components/ui/avatar";
@@ -235,7 +236,55 @@ const Home = () => {
               </ScrollView>
             </VStack>
 
-            {/* Quick Actions - simplified structure with no animations */}
+            {/* Order Management with animations */}
+            <VStack space="lg" className="mb-8">
+              <HStack className="justify-between items-center mb-4">
+                <VStack>
+                  <Heading size="sm" className="text-gray-800">Order Management</Heading>
+                  <Text className="text-gray-500 text-xs">Monitor and manage all orders</Text>
+                </VStack>
+              </HStack>
+              
+              <VStack space="md">
+                <HStack space="md">
+                  <ManagementCard 
+                    title="Orders Sent" 
+                    subtitle="Orders"
+                    icon={Send}
+                    gradientColors={['#374151', '#1f2937']}
+                    onPress={() => router.push('/new-order')}
+                  />
+                  
+                  <ManagementCard 
+                    title="Confirmed" 
+                    subtitle="Orders"
+                    icon={CheckCircle2}
+                    gradientColors={['#10b981', '#059669']}
+                    onPress={() => router.push('/confirm-order')}
+                  />
+                </HStack>
+                
+                <HStack space="md">
+                  <ManagementCard 
+                    title="Cancelled" 
+                    subtitle="Orders"
+                    icon={XCircle}
+                    gradientColors={['#f97316', '#ea580c']}
+                    onPress={() => router.push('/cancel-order')}
+                  />
+                  
+                  <ManagementCard 
+                    title="Location" 
+                    subtitle="Tracking"
+                    icon={MapPin}
+                    gradientColors={['#6366f1', '#4f46e5']}
+                    onPress={() => router.push('/location')}
+                  />
+                </HStack>
+              </VStack>
+            </VStack>
+
+            {/* Quick Actions - now with animations */}
             <VStack space="lg" className="mb-8">
               <HStack className="justify-between items-center mb-4">
                 <VStack>
@@ -278,54 +327,6 @@ const Home = () => {
                     icon={User}
                     gradientColors={['#16a34a', '#15803d']}
                     onPress={() => router.push('/profile')}
-                  />
-                </HStack>
-              </VStack>
-            </VStack>
-
-            {/* Order Management without animations */}
-            <VStack space="lg" className="mb-8">
-              <HStack className="justify-between items-center mb-4">
-                <VStack>
-                  <Heading size="sm" className="text-gray-800">Order Management</Heading>
-                  <Text className="text-gray-500 text-xs">Monitor and manage all orders</Text>
-                </VStack>
-              </HStack>
-              
-              <VStack space="md">
-                <HStack space="md">
-                  <ManagementCard 
-                    title="Pending" 
-                    subtitle="Orders"
-                    icon={Clock}
-                    gradientColors={['#374151', '#1f2937']}
-                    onPress={() => router.push('/new-order')}
-                  />
-                  
-                  <ManagementCard 
-                    title="Confirmed" 
-                    subtitle="Orders"
-                    icon={CheckCircle2}
-                    gradientColors={['#10b981', '#059669']}
-                    onPress={() => router.push('/confirm-order')}
-                  />
-                </HStack>
-                
-                <HStack space="md">
-                  <ManagementCard 
-                    title="Cancelled" 
-                    subtitle="Orders"
-                    icon={XCircle}
-                    gradientColors={['#f97316', '#ea580c']}
-                    onPress={() => router.push('/cancel-order')}
-                  />
-                  
-                  <ManagementCard 
-                    title="Delivery" 
-                    subtitle="Tracking"
-                    icon={Truck}
-                    gradientColors={['#6366f1', '#4f46e5']}
-                    onPress={() => router.push('/location')}
                   />
                 </HStack>
               </VStack>

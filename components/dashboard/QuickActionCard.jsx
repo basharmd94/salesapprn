@@ -1,5 +1,5 @@
-import React from 'react';
-import { Platform, View } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { Platform, View, Animated } from 'react-native';
 import { Button } from '@/components/ui/button';
 import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
@@ -21,13 +21,52 @@ const QuickActionCard = ({
   icon: Icon, 
   subtitle, 
   onPress, 
+  animationDelay = 0,
   gradientColors = ['#4c669f', '#3b5998', '#192f6a'] 
 }) => {
+  const scale = useRef(new Animated.Value(1)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
+  
+  useEffect(() => {
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: 400,
+      delay: animationDelay,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+  
+  const onPressIn = () => {
+    Animated.spring(scale, {
+      toValue: 0.95,
+      friction: 8,
+      tension: 100,
+      useNativeDriver: true,
+    }).start();
+  };
+  
+  const onPressOut = () => {
+    Animated.spring(scale, {
+      toValue: 1,
+      friction: 8,
+      tension: 40,
+      useNativeDriver: true,
+    }).start();
+  };
+  
   return (
-    <View style={{ flex: 1 }}>
+    <Animated.View 
+      style={{ 
+        transform: [{ scale }],
+        opacity,
+        flex: 1,
+      }}
+    >
       <Button
         variant="unstyled"
         onPress={onPress}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
         className="p-0 h-[90px] overflow-hidden rounded-2xl"
         style={{
           elevation: Platform.OS === 'android' ? 4 : 0,
@@ -52,7 +91,7 @@ const QuickActionCard = ({
           </VStack>
         </LinearGradient>
       </Button>
-    </View>
+    </Animated.View>
   );
 };
 

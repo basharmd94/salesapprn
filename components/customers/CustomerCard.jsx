@@ -51,14 +51,14 @@ const CustomerCard = ({
   return (
     <Animated.View entering={AnimationComponent.duration(300).springify()}>
       <Card 
-        className="mb-3 p-0 bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100"
+        className="mb-3 p-0 bg-white rounded-xl overflow-hidden shadow-sm border border-orange-100"
         onPress={onPress}
       >
         {/* Card header with customer info */}
         <View className="p-4">
           <HStack space="md" alignItems="center">
-            <Box className="bg-indigo-50 rounded-full w-16 h-16 items-center justify-center shadow-sm">
-              <User size={28} color="#4f46e5" />
+            <Box className="bg-orange-50 rounded-full w-16 h-16 items-center justify-center shadow-sm">
+              <User size={28} color="#f97316" />
             </Box>
             <VStack space="xs" flex={1} className="ml-2">
               <Text className="text-gray-900 font-semibold text-lg" numberOfLines={2}>
@@ -66,8 +66,8 @@ const CustomerCard = ({
               </Text>
               {customer.xmobile && (
                 <HStack space="sm" alignItems="center">
-                  <Phone size={14} color="#6366f1" />
-                  <Text className="text-indigo-600 text-sm font-medium">
+                  <Phone size={14} color="#f97316" />
+                  <Text className="text-orange-500 text-sm font-medium">
                     {customer.xmobile}
                   </Text>
                 </HStack>
@@ -85,23 +85,23 @@ const CustomerCard = ({
         </View>
         
         {/* Icon buttons row - in a separate card section with gradient background */}
-        <View className="bg-gradient-to-r from-indigo-50 to-purple-50 px-4 py-3 border-t border-gray-100">
+        <View className="bg-gradient-to-r from-orange-50 to-amber-50 px-4 py-3 border-t border-orange-100">
           <HStack justifyContent="space-around">
             <TouchableOpacity 
               style={styles.actionButton}
               className="bg-white"
               onPress={callPhone}
             >
-              <Phone size={18} color="#4f46e5" />
-              <Text className="text-indigo-700 text-xs font-medium ml-2">Call</Text>
+              <Phone size={18} color="#f97316" />
+              <Text className="text-orange-700 text-xs font-medium ml-2">Call</Text>
             </TouchableOpacity>
             
             <TouchableOpacity 
               style={styles.actionButton}
               className="bg-white"
             >
-              <Briefcase size={18} color="#8b5cf6" />
-              <Text className="text-purple-700 text-xs font-medium ml-2">Analysis</Text>
+              <Briefcase size={18} color="#f59e0b" />
+              <Text className="text-amber-700 text-xs font-medium ml-2">Analysis</Text>
             </TouchableOpacity>
             
             <TouchableOpacity 
@@ -109,8 +109,8 @@ const CustomerCard = ({
               className="bg-white"
               onPress={openFeedback}
             >
-              <MessageSquare size={18} color="#0ea5e9" />
-              <Text className="text-sky-700 text-xs font-medium ml-2">Feedback</Text>
+              <MessageSquare size={18} color="#ea580c" />
+              <Text className="text-orange-800 text-xs font-medium ml-2">Feedback</Text>
             </TouchableOpacity>
           </HStack>
         </View>
@@ -147,21 +147,21 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   phoneButton: {
-    backgroundColor: '#eef2ff', // indigo-50
+    backgroundColor: '#fff7ed', // orange-50
   },
   feedbackButton: {
-    backgroundColor: '#f5f3ff', // purple-50
+    backgroundColor: '#ffedd5', // amber-50
   },
   buttonPressed: {
     opacity: 0.7,
   },
   phoneText: {
-    color: '#4f46e5', // indigo-700
+    color: '#c2410c', // orange-700
     fontSize: 12,
     marginLeft: 4,
   },
   feedbackText: {
-    color: '#7c3aed', // purple-700
+    color: '#b45309', // amber-700
     fontSize: 12,
     marginLeft: 4,
   },

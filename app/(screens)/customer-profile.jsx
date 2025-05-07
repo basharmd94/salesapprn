@@ -217,7 +217,7 @@ export default function CustomerProfileScreen() {
             />
           </Input>
           <Button 
-            className="bg-indigo-600" 
+            className="bg-orange-500" 
             onPress={handleSearch}
             isDisabled={searching}
           >
@@ -265,7 +265,7 @@ export default function CustomerProfileScreen() {
           size="lg"
           placement="bottom right"
           onPress={() => setIsFilterOpen(true)}
-          className="bg-indigo-600 active:bg-indigo-700"
+          className="bg-orange-500 active:bg-orange-600"
         >
           <FabIcon as={Filter} color="#ffffff" />
         </Fab>
