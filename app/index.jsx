@@ -69,9 +69,7 @@ const Index = () => {
             onPress={() => router.replace("/sign-in")}
             className="w-full mt-7 rounded-xl bg-gradient-to-r from-[#FFA001] to-[#FF6B00] shadow-md"
           >
-            <ButtonText className="font-bold">
-              Sign In
-            </ButtonText>
+
           </Button>
         </View>
       </ScrollView>

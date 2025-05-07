@@ -334,6 +334,7 @@ const DrawerMenu = ({ isVisible, onClose }) => {
               description="Performance metrics" 
               onPress={() => navigateTo('/sales-analytics')} 
               isActive={activeRoute === '/sales-analytics'}
+              
             />
             <Divider className="bg-gray-100" />
             <MenuItem 
