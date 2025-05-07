@@ -19,7 +19,7 @@ export default function NotFoundScreen() {
       <Box className="h-full">
         {/* Top Shape - Decorative element */}
         <Box className="absolute top-0 left-0 right-0">
-          <Box className="h-40 bg-indigo-600 rounded-b-[50px]" />
+          <Box className="h-40 bg-orange-500 rounded-b-[50px]" />
         </Box>
         
         <Box className="flex-1 z-10 px-6 pt-8">
@@ -29,8 +29,8 @@ export default function NotFoundScreen() {
                 variant="link" 
                 className="self-start p-0 mb-8"
               >
-                <ArrowLeft size={20} color="#6366f1" />
-                <ButtonText className="text-indigo-600 ml-1">Back to Home</ButtonText>
+                <ArrowLeft size={20} color="#fff" />
+                <ButtonText className="text-white ml-1">Back to Home</ButtonText>
               </Button>
             </Link>
           </Animated.View>
@@ -41,7 +41,7 @@ export default function NotFoundScreen() {
             entering={FadeInDown.duration(800).springify()}
           >
             <Box className="bg-white p-5 rounded-full shadow-lg mb-6">
-              <Rocket size={80} color="#6366f1" />
+              <Rocket size={80} color="#FFA500" />
             </Box>
             
             <Heading className="text-center text-3xl font-bold text-gray-800 mb-2">
@@ -53,8 +53,8 @@ export default function NotFoundScreen() {
             </Text>
             
             <Box className="bg-indigo-50 px-4 py-3 rounded-xl shadow-sm flex-row items-center">
-              <Construction size={20} color="#6366f1" />
-              <Text className="ml-2 text-indigo-700 font-medium">
+              <Construction size={20} color="#FFA500" />
+              <Text className="ml-2 text-orange-500 font-medium">
                 Big things are in the works!
               </Text>
             </Box>
@@ -89,27 +89,18 @@ export default function NotFoundScreen() {
               </Box>
               
               <Box className="flex-row">
-                <Box className="w-6 h-6 rounded-full bg-indigo-500 items-center justify-center">
+                <Box className="w-6 h-6 rounded-full bg-orange-500 items-center justify-center">
                   <Text className="text-white font-medium">⟳</Text>
                 </Box>
                 <VStack className="ml-3 flex-1">
                   <Text className="text-gray-800 font-medium">Development</Text>
                   <Text className="text-gray-500 text-xs">In Progress (80%)</Text>
                   <Box className="h-1.5 bg-gray-200 rounded-full mt-1.5 overflow-hidden">
-                    <Box className="h-full bg-indigo-500 rounded-full" style={{ width: '80%' }} />
+                    <Box className="h-full bg-orange-500 rounded-full" style={{ width: '80%' }} />
                   </Box>
                 </VStack>
               </Box>
               
-              <Box className="flex-row">
-                <Box className="w-6 h-6 rounded-full bg-gray-300 items-center justify-center">
-                  <Text className="text-white font-medium">4</Text>
-                </Box>
-                <VStack className="ml-3 flex-1">
-                  <Text className="text-gray-800 font-medium">Testing &amp; Launch</Text>
-                  <Text className="text-gray-500 text-xs">Expected: May 15, 2025</Text>
-                </VStack>
-              </Box>
             </VStack>
           </Animated.View>
           
@@ -121,7 +112,7 @@ export default function NotFoundScreen() {
             <Link href="/" asChild>
               <Button 
                 size="lg"
-                className="bg-indigo-600 rounded-xl px-8"
+                className="bg-orange-500 rounded-xl px-8"
               >
                 <ButtonText>Notify Me When It's Ready</ButtonText>
               </Button>

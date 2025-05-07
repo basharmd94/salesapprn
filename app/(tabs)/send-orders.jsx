@@ -92,14 +92,14 @@ const MemoizedOrderItem = memo(function OrderItem({ item, itemIndex, onDelete, o
             <Box className="bg-white px-3 py-1.5 rounded-full border border-warning-200">
               <HStack space="xs" alignItems="center">
                 <Tag size={14} className="text-warning-600" />
-                <Text className="text-lg font-medium text-warning-700">৳{item.xprice}</Text>
+                <Text className="text-md font-medium text-warning-700">৳{item.xprice}</Text>
               </HStack>
             </Box>
             <ArrowRight size={14} className="text-warning-400" />
             <Box className="bg-white px-3 py-1.5 rounded-full border border-warning-200">
               <HStack space="xs" alignItems="center">
                 <CreditCard size={14} className="text-warning-600" />
-                <Text className="text-lg font-medium text-warning-700">৳{item.xlinetotal}</Text>
+                <Text className="text-md font-medium text-warning-700">৳{item.xlinetotal}</Text>
               </HStack>
             </Box>
           </HStack>
@@ -127,13 +127,13 @@ const MemoizedOrderCard = memo(function OrderCard({ order, index, onSend, onDele
                   <Box className="bg-warning-50 px-3 py-1.5 rounded-full border border-warning-200">
                     <HStack space="xs" alignItems="center">
                       <Store size={14} className="text-warning-700" />
-                      <Text className="text-lg font-semibold text-warning-700">{order.zid}</Text>
+                      <Text className="text-sm font-semibold text-warning-700">{order.zid}</Text>
                     </HStack>
                   </Box>
                   <Box className="bg-warning-50 px-3 py-1.5 rounded-full border border-warning-200">
                     <HStack space="xs" alignItems="center">
                       <Calendar size={14} className="text-warning-700" />
-                      <Text className="text-lg font-medium text-warning-700">
+                      <Text className="text-sm font-medium text-warning-700">
                         {new Date().toLocaleDateString()}
                       </Text>
                     </HStack>
@@ -142,15 +142,18 @@ const MemoizedOrderCard = memo(function OrderCard({ order, index, onSend, onDele
                 <HStack space="xs" alignItems="center" className="mt-2">
                   <Store size={16} className="text-gray-600" />
                   <Text className="text-base font-semibold text-gray-900">
-                    {order.xcus} -- 
+                    {order.xcus}
                   </Text>
+                </HStack>
+                <HStack space="xs" alignItems="center">
+                  <ShoppingBag size={16} className="text-gray-600" />
                   <Text className="text-base font-semibold text-gray-900">
                     {order.xcusname.length > 25 ? order.xcusname.substring(0, 25) + "..." : order.xcusname}
                   </Text>
                 </HStack>
                 <HStack space="xs" alignItems="center" className="mt-0.5">
                   <MapPin size={14} className="text-gray-500" />
-                  <Text className="text-lg text-gray-500">
+                  <Text className="text-md text-gray-500">
                     {order.xcusadd.length > 30 ? order.xcusadd.substring(0, 30) + "..." : order.xcusadd}
                   </Text>
                 </HStack>
