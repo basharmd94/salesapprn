@@ -151,16 +151,17 @@ export default function CustomerSelector({
 
   return (
     <VStack space="lg">
+      
       <Button
         variant="outline"
-        className="border border-primary-50 rounded-2xl flex-row items-center justify-between h-14 mt-2"
+        className="border border-primary-50 rounded-2xl flex-row items-center justify-between h-10 no-gap"
         onPress={() => setShowCustomerSheet(true)}
         disabled={disabled}
       >
-        <ButtonText className="text-primary-400 text-lg font-semibold flex-1 ">
+        <ButtonText className="text-primary-400 text-md font-semibold flex-1 ">
           {customerName || "Select Customer"}
         </ButtonText>
-        <ButtonIcon as={ChevronDown} className="text-primary-500" /> 
+        <ButtonIcon as={ChevronDown} className="text-primary-400" />
       </Button>
 
       <Drawer

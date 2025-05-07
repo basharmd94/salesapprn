@@ -428,11 +428,7 @@ export default function LocationScreen() {
                 loading ? 'Fetching your location...' : 
                 'Location successfully retrieved'}
               </Text>
-              {!loading && !errorMsg && address && (
-                <Text className="text-xs text-gray-500" numberOfLines={1}>
-                  {address.city || address.district}, {address.country}
-                </Text>
-              )}
+
             </VStack>
             {!loading && !errorMsg && (
               <Box className="bg-green-100 p-2 rounded-full">

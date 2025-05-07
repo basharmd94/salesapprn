@@ -219,14 +219,14 @@ export default function ItemSelector({
     <VStack space="md">
       <Button
         variant="outline"
-        className="border border-primary-50 rounded-2xl flex-row items-center justify-between h-14 mt-2"
+        className="border border-primary-50 rounded-2xl flex-row items-center justify-between h-10 mt-2"
         onPress={() => setShowItemSheet(true)}
         disabled={disabled}
       >
-        <ButtonText className="text-primary-400 text-lg font-semibold flex-1">
+        <ButtonText className="text-primary-400 text-md font-semibold flex-1">
           {itemName || "Select Item"}
         </ButtonText>
-        <ButtonIcon as={ChevronDown} className="text-primary-50" />
+        <ButtonIcon as={ChevronDown} className="text-primary-400" />
       </Button>
 
       <Drawer
