@@ -56,12 +56,20 @@ export default function ScreensLayout() {
           headerBackTitleVisible: false,
           animation: "slide_from_right"
         }} 
-      />
+      />      
       <Stack.Screen 
         name="customer-feedback" 
         options={{ 
           headerShown: false,
           title: "Customer Feedback",
+          headerBackTitleVisible: false,
+          animation: "slide_from_right"
+        }} 
+      />
+      <Stack.Screen 
+        name="general-feedback" 
+        options={{ 
+          title: "General Feedback",
           headerBackTitleVisible: false,
           animation: "slide_from_right"
         }} 
