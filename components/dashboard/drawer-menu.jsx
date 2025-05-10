@@ -274,20 +274,14 @@ const DrawerMenu = ({ isVisible, onClose }) => {
               // onPress={() => navigateTo('/customer-balance')} 
               isActive={activeRoute === '/customer-balance'}
               badge="3"
-            />            <Divider className="bg-gray-100" />
-            {/* <MenuItem 
-              icon={MessageSquare} 
-              title="Feedback & Reviews" 
-              description="Customer feedback" 
-              onPress={() => navigateTo('/customer-feedback')} 
-              isActive={activeRoute === '/customer-feedback'}
-            /> */}
+            />            
+            <Divider className="bg-gray-100" />
             <MenuItem 
               icon={MessageSquare} 
-              title="General Feedback" 
-              description="Submit feedback" 
-              onPress={() => navigateTo('/general-feedback')} 
-              isActive={activeRoute === '/general-feedback'}
+              title="Feedback" 
+              description="Submit your general feedback" 
+              onPress={() => navigateTo('/general-haptic')} 
+              isActive={activeRoute === '/general-haptic'}
             />
           </CategorySection>
 

@@ -67,11 +67,12 @@ export default function ScreensLayout() {
         }} 
       />
       <Stack.Screen 
-        name="general-feedback" 
+        name="general-haptic" 
         options={{ 
-          title: "General Feedback",
+          title: "General Haptic",
           headerBackTitleVisible: false,
-          animation: "slide_from_right"
+          headerShown: false,
+          animation: "slide_from_right",
         }} 
       />
       {/* <Stack.Screen 
