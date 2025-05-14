@@ -34,7 +34,9 @@ import {
   ChevronRight,
   Send,
   SendHorizonal,
-  SendIcon
+  SendIcon,
+  Factory,
+  PackageCheck
 } from 'lucide-react-native';
 import { useAuth } from '@/context/AuthContext';
 import logger from '@/utils/logger';
@@ -282,8 +284,7 @@ const DrawerMenu = ({ isVisible, onClose }) => {
               description="Submit your general feedback" 
               onPress={() => navigateTo('/general-haptic')} 
               isActive={activeRoute === '/general-haptic'}
-            />
-          </CategorySection>
+            />          </CategorySection>
 
           {/* Product Management */}
           <CategorySection title="Product Management" icon={Package}>
@@ -295,8 +296,21 @@ const DrawerMenu = ({ isVisible, onClose }) => {
               isActive={activeRoute === '/fetch_items'}
             />
             <Divider className="bg-gray-100" />
-
           </CategorySection>
+
+          {/* Manufacturing - Only visible to admin users */}
+          {user?.is_admin && (
+            <CategorySection title="Manufacturing" icon={Factory}>
+              <MenuItem 
+                icon={PackageCheck} 
+                title="Manufacturing Items" 
+                description="Production management" 
+                onPress={() => navigateTo('/manufacturing-items')} 
+                isActive={activeRoute === '/manufacturing-items'}
+              />
+              <Divider className="bg-gray-100" />
+            </CategorySection>
+          )}
 
           {/* Order Management */}
           <CategorySection title="Order Management" icon={ClipboardList}>

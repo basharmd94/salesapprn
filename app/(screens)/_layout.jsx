@@ -65,14 +65,27 @@ export default function ScreensLayout() {
           headerBackTitleVisible: false,
           animation: "slide_from_right"
         }} 
-      />
-      <Stack.Screen 
+      />      <Stack.Screen 
         name="general-haptic" 
         options={{ 
           title: "General Haptic",
           headerBackTitleVisible: false,
           headerShown: false,
           animation: "slide_from_right",
+        }} 
+      />
+      <Stack.Screen 
+        name="manufacturing-items" 
+        options={{ 
+          headerShown: false,
+          animation: "slide_from_right"
+        }} 
+      />
+      <Stack.Screen 
+        name="mo-detail" 
+        options={{ 
+          headerShown: false,
+          animation: "slide_from_right"
         }} 
       />
       {/* <Stack.Screen 

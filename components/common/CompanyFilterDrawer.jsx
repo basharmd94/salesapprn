@@ -12,7 +12,7 @@ import { Text } from "@/components/ui/text";
 import { Heading } from "@/components/ui/heading";
 import { VStack } from "@/components/ui/vstack";
 import { HStack } from "@/components/ui/hstack";
-import { Building2, Users, Database, Package, ShoppingBag } from 'lucide-react-native';
+import { Building2, Users, Database, Package, ShoppingBag, Factory, PackageCheck } from 'lucide-react-native';
 import { COMPANY_ZIDS, COMPANY_NAMES } from '@/lib/api_items';
 
 /**
@@ -34,8 +34,7 @@ const CompanyFilterDrawer = ({
   title = "Select Company",
   subtitle = "Choose a company to filter results",
   type = "default"
-}) => {
-  // Use different icons based on type
+}) => {  // Use different icons based on type
   const getIcon = (id) => {
     if (type === 'customers') {
       return id === 'hmbr' ? Users : 
@@ -45,17 +44,21 @@ const CompanyFilterDrawer = ({
       return id === 'hmbr' ? ShoppingBag : 
              id === 'gi' ? Database : 
              id === 'zepto' ? Package : ShoppingBag;
+    } else if (type === 'manufacturing') {
+      return id === 'hmbr' ? PackageCheck : 
+             id === 'gi' ? Factory : 
+             id === 'zepto' ? PackageCheck : Factory;
     } else {
       return id === 'hmbr' ? Building2 : 
              id === 'gi' ? Building2 : 
              id === 'zepto' ? Building2 : Building2;
     }
   };
-
   // Get the title suffix based on type
   const getTitleSuffix = () => {
     if (type === 'customers') return "Customers";
     if (type === 'items') return "Items";
+    if (type === 'manufacturing') return "Manufacturing";
     return "";
   };
 
@@ -82,11 +85,11 @@ const CompanyFilterDrawer = ({
       color: '#8b5cf6', // violet-500
     },
   ];
-
   // Customize header color/style based on type
   const getHeaderStyles = () => {
     if (type === 'customers') return { bg: 'bg-indigo-100', color: '#4f46e5' };
     if (type === 'items') return { bg: 'bg-orange-100', color: '#f97316' };
+    if (type === 'manufacturing') return { bg: 'bg-blue-100', color: '#0891b2' };
     return { bg: 'bg-blue-100', color: '#3b82f6' };
   };
 
