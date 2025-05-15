@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, RefreshControl, Linking, Platform, Alert } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
@@ -8,7 +8,6 @@ import { HStack } from "@/components/ui/hstack";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clipboard, Calendar, User, Briefcase, Factory, Download, ArrowLeft } from "lucide-react-native";
-import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { get_manufacturing_item_details } from '@/lib/api_manufacturing';
 import { MODetailSkeleton } from '@/components/manufacturing';
@@ -44,7 +43,6 @@ export default function MODetailScreen() {
       setRefreshing(false);
     }
   };
-
   // Initial fetch
   useEffect(() => {
     if (moNumber && zid) {
@@ -69,32 +67,30 @@ export default function MODetailScreen() {
     });
   };
 
-  // Go back to list
-  const handleBack = () => {
-    router.back();
-  };
-
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-gray-100">
+      {/* Add Stack.Screen for header with back button */}
+      <Stack.Screen 
+        options={{
+          headerShown: true,
+          title: moNumber || "Manufacturing Order",
+          headerTitleStyle: {
+            fontSize: 16,
+          },
+          headerShadowVisible: false,
+          headerStyle: {
+            backgroundColor: '#f3f4f6', // gray-100
+          },
+        }} 
+      />
+      
       <ScrollView
         contentContainerStyle={{ padding: 16 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {/* Header with back button and export */}
-        <HStack justifyContent="space-between" className="mb-4">
-          <Button
-            size="sm"
-            variant="outline"
-            onPress={handleBack}
-            className="border-gray-300"
-          >
-            <ArrowLeft size={16} color="#6b7280" />
-          <Text>Back</Text>
-          </Button>
-        </HStack>
-          {loading ? (
+        {loading ? (
           <MODetailSkeleton />
         ) : detailData ? (
           <Animated.View entering={FadeIn.duration(300)}>
@@ -107,7 +103,7 @@ export default function MODetailScreen() {
                       <Clipboard size={20} color="#f97316" />
                     </Box>
                     <VStack>
-                      <Text className="text-xl font-bold text-gray-800">MO #{moNumber}</Text>
+                      <Text className="text-xl font-bold text-gray-800">{moNumber}</Text>
                       {xitem && <Text className="text-sm text-gray-600">{xitem}</Text>}
                     </VStack>
                   </HStack>
@@ -167,7 +163,8 @@ export default function MODetailScreen() {
               </HStack>
               
               {/* Table Body */}
-              {detailData.map((component, index) => (                <HStack 
+              {detailData.map((component, index) => (                
+                <HStack 
                   key={`component-${index}`}
                   className={`p-3 ${index % 2 === 1 ? 'bg-gray-50' : ''} ${
                     index !== detailData.length - 1 ? 'border-b border-gray-100' : ''
@@ -204,7 +201,7 @@ export default function MODetailScreen() {
             </Box>
           </Animated.View>
         ) : (
-          <Box className="bg-white p-4 rounded-xl shadow-sm">
+          <Box className="bg-orange p-4 rounded-xl shadow-sm">
             <Text className="text-center text-gray-500">No data found for this manufacturing order.</Text>
           </Box>
         )} 
