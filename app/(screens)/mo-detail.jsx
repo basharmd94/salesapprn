@@ -68,29 +68,6 @@ export default function MODetailScreen() {
       year: 'numeric'
     });
   };
-  // Handle export
-  const handleExport = () => {
-    try {
-      import('@/lib/api_manufacturing').then(({ export_manufacturing_order }) => {
-        // Get the export URL
-        const exportUrl = export_manufacturing_order(zid, moNumber, true);
-        
-        // Open in browser for web or handle through Linking for mobile
-        if (Platform.OS === 'web') {
-          if (typeof window !== 'undefined') {
-            window.open(exportUrl, '_blank');
-          }
-        } else {
-          Linking.openURL(exportUrl).catch((err) => {
-            Alert.alert('Error', 'Could not open the export URL: ' + err.message);
-          });
-        }
-      });
-    } catch (error) {
-      console.error('Export error:', error);
-      Alert.alert('Export Error', 'Failed to export the manufacturing order.');
-    }
-  };
 
   // Go back to list
   const handleBack = () => {
@@ -114,17 +91,7 @@ export default function MODetailScreen() {
             className="border-gray-300"
           >
             <ArrowLeft size={16} color="#6b7280" />
-            <ButtonText className="text-gray-700 ml-1">Back</ButtonText>
-          </Button>
-          
-          <Button 
-            size="sm" 
-            variant="outline"
-            className="border-green-500"
-            onPress={handleExport}
-          >
-            <Download size={16} color="#22c55e" />
-            <ButtonText className="text-green-500 ml-1">Export</ButtonText>
+          <Text>Back</Text>
           </Button>
         </HStack>
           {loading ? (
@@ -136,7 +103,7 @@ export default function MODetailScreen() {
               <HStack justifyContent="space-between" alignItems="flex-start" className="mb-3">
                 <VStack>
                   <HStack space="sm" alignItems="center">
-                    <Box className="bg-primary-50 p-2 rounded-lg">
+                    <Box className="bg-secondary-400 p-2 rounded-lg">
                       <Clipboard size={20} color="#f97316" />
                     </Box>
                     <VStack>

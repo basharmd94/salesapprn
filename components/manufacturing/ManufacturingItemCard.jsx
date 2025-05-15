@@ -59,28 +59,7 @@ const ManufacturingItemCard = ({ item, index = 0 }) => {
   };
 
   // Handle export
-  const handleExport = () => {
-    try {
-      import('@/lib/api_manufacturing').then(({ export_manufacturing_order }) => {
-        // Get the export URL
-        const exportUrl = export_manufacturing_order(item.zid, item.xmoord, true);
-        
-        // Open in browser for web or handle through Linking for mobile
-        if (Platform.OS === 'web') {
-          if (typeof window !== 'undefined') {
-            window.open(exportUrl, '_blank');
-          }
-        } else {
-          Linking.openURL(exportUrl).catch((err) => {
-            Alert.alert('Error', 'Could not open the export URL: ' + err.message);
-          });
-        }
-      });
-    } catch (error) {
-      console.error('Export error:', error);
-      Alert.alert('Export Error', 'Failed to export the manufacturing order.');
-    }
-  };
+
   return (
     <Animated.View
       entering={FadeInRight.delay(index * 100).duration(400)}
@@ -156,7 +135,7 @@ const ManufacturingItemCard = ({ item, index = 0 }) => {
                   <DollarSign size={14} color="#FB8C00" />
                   <Text className="text-sm text-orange-600 font-medium">Cost</Text>
                 </HStack>
-                <Text className="text-base font-bold text-orange-600">৳{item.mo_cost}</Text>
+                <Text className="text-base font-bold text-primary-600">৳{item.mo_cost}</Text>
               </VStack>
             </HStack>
             
@@ -193,7 +172,7 @@ const ManufacturingItemCard = ({ item, index = 0 }) => {
                 size="sm" 
                 variant="outline"
                 className="flex-1 border-green-500"
-                onPress={handleExport}
+                onPress={() => {}}
               >
                 <Download size={16} color="#22c55e" className="mr-1" />
                 <ButtonText className="text-green-500">Export</ButtonText>
