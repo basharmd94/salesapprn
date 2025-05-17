@@ -132,12 +132,11 @@ export default function MODetailScreen() {
                     {xqtyprd || 'N/A'}
                   </Text>
                 </HStack>
-                
-                {/* Unit Cost */}
+                  {/* Unit Cost - Total Cost divided by Production Quantity */}
                 <HStack space="sm">
                   <Text className="text-gray-600 w-32">Unit Cost:</Text>
                   <Text className="flex-1 font-medium text-gray-800">
-                    ৳{detailData.reduce((sum, item) => sum + (item.cost_per_item || 0), 0).toFixed(2)}
+                    ৳{(detailData.reduce((sum, item) => sum + (item.total_amt || 0), 0) / (parseFloat(xqtyprd) || 1)).toFixed(2)}
                   </Text>
                 </HStack>
                 

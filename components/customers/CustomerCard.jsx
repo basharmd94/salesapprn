@@ -4,7 +4,7 @@ import { Text } from "@/components/ui/text";
 import { HStack } from "@/components/ui/hstack";
 import { VStack } from "@/components/ui/vstack";
 import { Card } from "@/components/ui/card";
-import { User, MapPin, Phone, Tag, Building, Briefcase, MessageSquare, ChevronRight } from 'lucide-react-native';
+import { User, MapPin, Phone, Tag, Building, Briefcase, MessageSquare, ChevronRight, Hash } from 'lucide-react-native';
 import Animated, { FadeInRight } from 'react-native-reanimated';
 import { TouchableOpacity, View, StyleSheet, Linking } from 'react-native';
 import { router } from 'expo-router';
@@ -61,9 +61,19 @@ const CustomerCard = ({
               <User size={28} color="#f97316" />
             </Box>
             <VStack space="xs" flex={1} className="ml-2">
-              <Text className="text-gray-900 font-semibold text-lg" numberOfLines={2}>
-                {customer.xorg}
-              </Text>
+              <HStack space="sm" alignItems="center">
+                <Text className="text-gray-900 font-semibold text-lg" numberOfLines={1} style={{flex: 1}}>
+                  {customer.xorg}
+                </Text>
+                {customer.xcus && (
+                  <HStack space="xs" alignItems="center" className="bg-orange-50 px-2 py-1 rounded-md">
+                    <Hash size={14} color="#f97316" />
+                    <Text className="text-orange-700 text-xs font-medium">
+                      {customer.xcus}
+                    </Text>
+                  </HStack>
+                )}
+              </HStack>
               {customer.xmobile && (
                 <HStack space="sm" alignItems="center">
                   <Phone size={14} color="#f97316" />
