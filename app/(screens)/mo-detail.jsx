@@ -170,10 +170,11 @@ export default function MODetailScreen() {
                   }`}
                   alignItems="center"
                 >
-                  <VStack className="flex-1">                    <Text className="text-gray-800 font-medium">{component.xitem}</Text>
+                  <VStack className="flex-1">                    
+                    <Text className="text-gray-800 font-medium">{component.xitem}</Text>
                     <Text className="text-sm text-gray-500">{component.xdesc}</Text>
-                    <HStack space="sm" className="mt-1">                      <Text className="text-sm text-blue-600">Rate: ৳{component.rate?.toFixed(2) || '0.00'}</Text>
-                      <Text className="text-sm text-gray-800">Unit Cost: ৳{component.cost_per_item?.toFixed(2) || '0.00'}</Text>
+                    <HStack space="sm" className="mt-1">                       <Text className="text-sm text-blue-600">Rate: ৳{component.rate?.toFixed(2) || '0.00'}</Text>
+                      <Text className="text-sm font-bold text-gray-800">Unit Cost: ৳{((component.rate || 0) * (component.raw_qty || 0)).toFixed(2)}</Text>
                       <Text 
                         className={`text-sm ${
                           component.stock === 0 ? 'text-red-600' : 
