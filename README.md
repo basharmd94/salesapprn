@@ -52,4 +52,22 @@ Join our community of developers creating universal apps.
 
 ## For export apk run following commands
 
-- eas build -p android --profile preview
+- eas build -p android --profile preview --clear cache
+
+
+## For Clear Cache and show the app icon and splash screen
+
+# Clean the project
+rm -rf android/
+rm -rf ios/
+
+# Generate native projects with the updated assets
+npx expo prebuild
+
+# Build the APK
+cd android
+./gradlew clean
+./gradlew assembleRelease
+
+# or export with expo
+eas build -p android --profile preview --clear cache
