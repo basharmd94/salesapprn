@@ -160,8 +160,8 @@ export default function CreateOrder() {
         xroword: cartItems.length + 1,
         xdate: new Date().toISOString().split('T')[0],
         xsl: Math.random().toString(36).substring(7), // Unique identifier for each cart item
-        xlat: null,
-        xlong: null,
+        xlat: 2,
+        xlong: 2,
         xlinetotal: lineTotal
     };
 

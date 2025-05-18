@@ -153,9 +153,9 @@ export default function CustomerProfileScreen() {
   const renderFooter = () => {
     if (!loadingMore || customers.length === 0) return null;
     
-    return (
+    return ( 
       <Box className="py-4 items-center">
-        <ActivityIndicator size="small" color="#4f46e5" />
+        <ActivityIndicator size="small" color="#f97316" />
       </Box>
     );
   };

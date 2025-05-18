@@ -470,8 +470,8 @@ export default function LocationScreen() {
         <Box className="absolute bottom-6 right-6">
           <Box className="relative">
             <Button 
-              size="lg"
-              className={`${requestsInfo.remaining > 0 ? "bg-blue-600" : "bg-gray-400"} h-16 w-16 rounded-full items-center justify-center shadow-lg`}
+              size="sm"
+              className={`${requestsInfo.remaining > 0 ? "bg-orange-600" : "bg-gray-400"} h-16 w-16 rounded-full items-center justify-center shadow-lg`}
               onPress={sendLocationToAPI}
               disabled={sendingToAPI || requestsInfo.remaining <= 0}
             >

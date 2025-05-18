@@ -34,24 +34,29 @@ const CompanyFilterDrawer = ({
   title = "Select Company",
   subtitle = "Choose a company to filter results",
   type = "default"
-}) => {  // Use different icons based on type
+}) => {  
+  // Use different icons based on type  
   const getIcon = (id) => {
     if (type === 'customers') {
       return id === 'hmbr' ? Users : 
              id === 'gi' ? Database : 
-             id === 'zepto' ? Users : Users;
+             id === 'zepto' ? Users :
+             id === 'packaging' ? Package : Users;
     } else if (type === 'items') {
       return id === 'hmbr' ? ShoppingBag : 
              id === 'gi' ? Database : 
-             id === 'zepto' ? Package : ShoppingBag;
+             id === 'zepto' ? Package :
+             id === 'packaging' ? Package : ShoppingBag;
     } else if (type === 'manufacturing') {
       return id === 'hmbr' ? PackageCheck : 
              id === 'gi' ? Factory : 
-             id === 'zepto' ? PackageCheck : Factory;
+             id === 'zepto' ? PackageCheck :
+             id === 'packaging' ? Package : Factory;
     } else {
       return id === 'hmbr' ? Building2 : 
              id === 'gi' ? Building2 : 
-             id === 'zepto' ? Building2 : Building2;
+             id === 'zepto' ? Building2 :
+             id === 'packaging' ? Package : Building2;
     }
   };
   // Get the title suffix based on type
@@ -61,7 +66,6 @@ const CompanyFilterDrawer = ({
     if (type === 'manufacturing') return "Manufacturing";
     return "";
   };
-
   const companies = [
     {
       id: 'hmbr',
@@ -83,6 +87,13 @@ const CompanyFilterDrawer = ({
       description: `Zepto ${getTitleSuffix()}`.trim(),
       zid: COMPANY_ZIDS.ZEPTO,
       color: '#8b5cf6', // violet-500
+    },
+    {
+      id: 'packaging',
+      name: 'Packaging',
+      description: `Packaging ${getTitleSuffix()}`.trim(),
+      zid: COMPANY_ZIDS.PACKAGING, 
+      color: '#10b981', // emerald-500
     },
   ];
   // Customize header color/style based on type
